@@ -32,16 +32,16 @@ def fir_windowing(fs,ftype,window,BW,ripple,fc1,fc2=1,Adb=0):
 	n=np.arange(int(-M/2),int(M/2+1))
 
 	#Determines the Filter type 
-	if (ftype=="Low"):
+	if (ftype=="Low-pass"):
     	hx=(wc1/np.pi)*(np.sin(wc1*n)/wc1*n)
 	    hx[int(M/2)]=(wc1/np.pi)
-	elif (ftype=="High"):
+	elif (ftype=="High-pass"):
 	    hx=-(wc1/np.pi)*(np.sin(wc1*n)/wc1*n)
 	    hx[int(M/2)]=1-(wc1/np.pi)
-	elif (ftype=="Bandpass"):
+	elif (ftype=="Band-pass"):
 	    hx=((wc2/np.pi)*np.sin(n*wc2))/(n*wc2)-((wc1/np.pi)*np.sin(n*wc1))/(n*wc1)
 	    hx[int(M/2)]=(1/np.pi)*(wc2-wc1)
-	elif (ftype=="Reject"):
+	elif (ftype=="Band-stop"):
 	    hx=((wc1/np.pi)*np.sin(n*wc1))/(n*wc1)-((wc2/np.pi)*np.sin(n*wc2))/(n*wc2)
 	    hx[int(M/2)]=1-((1/np.pi)*(wc2-wc1))
 
@@ -61,11 +61,11 @@ def fir_windowing(fs,ftype,window,BW,ripple,fc1,fc2=1,Adb=0):
 	    win=signal.hamming(len(hx))
 	elif (window=="Hann"):
 	    win=signal.hann(len(hx))
-	elif (window=="Rectangular"):
+	elif (window=="Square"):
 	    win=np.ones(len(hx))
 	elif (window=="Blackman"):
     	win=signal.blackman(len(hx))
-	elif (window=="triangular"):
+	elif (window=="Bartlett"):
 		win=signal.triang(len(hx))
 
 

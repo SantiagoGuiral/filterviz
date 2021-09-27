@@ -29,7 +29,8 @@ window.title("PSD Filter's Bank")
 
 #main frame
 main=tk.Frame(window)
-main.place(relx=0.01,rely=0.01,relwidth=0.99,relheight=0.99)
+main.place(relx=0,rely=0,relwidth=1,relheight=1)
+main.configure(bg='white')
 
 b3=tk.Button(window,text="Plot",command=plot_graphs,fg='white',bg='black')
 b3.place(relx=0.10,rely=0.65,relwidth=0.4,relheight=0.15)
@@ -37,16 +38,28 @@ b3.place(relx=0.10,rely=0.65,relwidth=0.4,relheight=0.15)
 
 #graphics of interest
 image_frame=tk.LabelFrame(main,text="Graphics of Interest")
-image_frame.place(relx=0.60,rely=0,relwidth=0.38,relheight=0.99)
+image_frame.place(relx=0.40,rely=0.01,relwidth=0.59,relheight=0.80)
 
-timeplot=tk.LabelFrame(image_frame,text="Time Domain")
-timeplot.place(relx=0.025,rely=0.02,relwidth=0.95,relheight=0.30)
+time_frame=tk.LabelFrame(image_frame,text="Time Domain")
+time_frame.place(relx=0.01,rely=0.01,relwidth=0.48,relheight=0.98)
 
-freqplot=tk.LabelFrame(image_frame,text="Frequency Domain")
-freqplot.place(relx=0.025,rely=0.35,relwidth=0.95,relheight=0.30)
+timeplot=tk.Frame(time_frame)
+timeplot.place(relx=0.01,rely=0.01,relwidth=0.98,relheight=0.48)
 
-filterplot=tk.LabelFrame(image_frame,text="Filter Response")
-filterplot.place(relx=0.025,rely=0.68,relwidth=0.95,relheight=0.30)
+filteredplot=tk.Frame(time_frame)
+filteredplot.place(relx=0.01,rely=0.51,relwidth=0.98,relheight=0.48)
 
+freq_frame=tk.LabelFrame(image_frame,text="Frequency Domain")
+freq_frame.place(relx=0.51,rely=0.01,relwidth=0.48,relheight=0.98)
+
+freqplot=tk.Frame(freq_frame)
+freqplot.place(relx=0.01,rely=0.01,relwidth=0.98,relheight=0.48)
+
+filterresponse=tk.Frame(freq_frame)
+filterresponse.place(relx=0.01,rely=0.51,relwidth=0.98,relheight=0.48)
+
+#play audio and export results
+results_frame=tk.LabelFrame(main, text="Results")
+results_frame.place(relx=0.40,rely=0.82,relwidth=0.59,relheight=0.17)
 
 window.mainloop()

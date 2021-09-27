@@ -11,10 +11,9 @@ def plot_graphs():
 	plot1.plot(y)
 	plot1.grid()
 	
-
 	canvas=FigureCanvasTkAgg(fig,master=timeplot)
 	canvas.draw()
-	canvas.get_tk_widget().place(relx=0.05,rely=0.05,relwidth=0.90,relheight=0.90)
+	canvas.get_tk_widget().place(relx=0.03,rely=0.03,relwidth=0.94,relheight=0.94)
 
 
 #main window for the interface

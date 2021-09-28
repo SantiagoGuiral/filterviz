@@ -47,99 +47,94 @@ main.configure(bg='white')
 
 #load audio wav
 audioload_frame=tk.LabelFrame(main, text="Audio Input")
-audioload_frame.place(relx=0.01,rely=0.01,relwidth=0.38,relheight=0.17)
+audioload_frame.place(relx=0.01,rely=0.01,relwidth=0.28,relheight=0.25)
 
 #filter form
 form=tk.LabelFrame(main,text="Input Design Parameters")
-form.place(relx=0.01,rely=0.19,relwidth=0.38,relheight=0.80)
-
-form_left=tk.Frame(form)
-form_left.place(relx=0.01,rely=0.01,relwidth=0.48,relheight=0.98)
-
-form_right=tk.Frame(form)
-form_right.place(relx=0.51,rely=0.01,relwidth=0.48,relheight=0.98)
+form.place(relx=0.01,rely=0.26,relwidth=0.28,relheight=0.73)
 
 
 #Filter method combobox
-method_label=tk.Label(form_left,text="Select the Method")
-method_label.place(relx=0.01,rely=0.01)
+method_label=tk.Label(form,text="Select the Method")
+method_label.place(relx=0.05,rely=0.02)
 
 method_str=tk.StringVar()
-method_cb=ttk.Combobox(form_right,width=15,textvariable=method_str)
+method_cb=ttk.Combobox(form,width=20,textvariable=method_str)
 method_cb['state']='readonly'
 method_cb['values']=fmethods
-method_cb.place(relx=0.01,rely=0.01)
+method_cb.place(relx=0.05,rely=0.05)
 method_cb.current(0)
 method_cb.bind("<<ComboboxSelected>>",view_method)
 
 
 #Filter type combobox
-type_label=tk.Label(form_left,text="Select the Filter Type")
-type_label.place(relx=0.01,rely=0.06)
+type_label=tk.Label(form,text="Select the Filter Band")
+type_label.place(relx=0.05,rely=0.09)
 
 type_str=tk.StringVar()
-type_cb=ttk.Combobox(form_right,width=15,textvariable=type_str)
+type_cb=ttk.Combobox(form,width=20,textvariable=type_str)
 type_cb['state']='readonly'
 type_cb['values']=ftypes
-type_cb.place(relx=0.01,rely=0.06)
+type_cb.place(relx=0.05,rely=0.12)
 type_cb.current(0)
 
 #Cut frequencies
-fc1_label=tk.Label(form_left,text="Fc1 [Hz]")
-fc1_label.place(relx=0.01,rely=0.11)
+fc1_label=tk.Label(form,text="Fc1 [Hz]")
+fc1_label.place(relx=0.05,rely=0.16)
 
-fc2_label=tk.Label(form_right,text="Fc2 [Hz]")
-fc2_label.place(relx=0.01,rely=0.11)
+fc1_input=tk.Entry(form)
+fc1_input.place(relx=0.05,rely=0.19,relwidth=0.4)
 
-fc1_input=tk.Entry(form_left)
-fc1_input.place(relx=0.31,rely=0.11,relwidth=0.4)
+fc2_label=tk.Label(form,text="Fc2 [Hz]")
+fc2_label.place(relx=0.05,rely=0.23)
 
-fc2_input=tk.Entry(form_right)
-fc2_input.place(relx=0.31,rely=0.11,relwidth=0.4)
+fc2_input=tk.Entry(form)
+fc2_input.place(relx=0.05,rely=0.26,relwidth=0.4)
 
 
 #Ripple and gain dB
-ripple_label=tk.Label(form_left,text="Ripple %")
-ripple_label.place(relx=0.01,rely=0.16)
+ripple_label=tk.Label(form,text="Ripple %")
+ripple_label.place(relx=0.05,rely=0.3)
 
-gain_label=tk.Label(form_right,text="Gain [dB]")
-gain_label.place(relx=0.01,rely=0.16)
+ripple_input=tk.Entry(form)
+ripple_input.place(relx=0.05,rely=0.33,relwidth=0.4)
 
-ripple_input=tk.Entry(form_left)
-ripple_input.place(relx=0.31,rely=0.16,relwidth=0.4)
+gain_label=tk.Label(form,text="Gain [dB]")
+gain_label.place(relx=0.05,rely=0.37)
 
-gain_input=tk.Entry(form_right)
-gain_input.place(relx=0.31,rely=0.16,relwidth=0.4)
+gain_input=tk.Entry(form)
+gain_input.place(relx=0.05,rely=0.4,relwidth=0.4)
 
 
 #Width of the transition band
-bw_label=tk.Label(form_left,text="Transition Band Width")
-bw_label.place(relx=0.01,rely=0.21)
+bw_label=tk.Label(form,text="Transition Band Width")
+bw_label.place(relx=0.05,rely=0.44)
 
-bw_input=tk.Entry(form_right)
-bw_input.place(relx=0.01,rely=0.21,relwidth=0.4)
+bw_input=tk.Entry(form)
+bw_input.place(relx=0.05,rely=0.47,relwidth=0.4)
+
 
 #Window type
-window_label=tk.Label(form_left,text="Select the window Type")
-window_label.place(relx=0.01,rely=0.26)
+window_label=tk.Label(form,text="Select the window Type")
+window_label.place(relx=0.05,rely=0.51)
 
 window_str=tk.StringVar()
-window_cb=ttk.Combobox(form_right,width=15,textvariable=window_str)
+window_cb=ttk.Combobox(form,width=20,textvariable=window_str)
 window_cb['state']='readonly'
 window_cb['values']=windows
-window_cb.place(relx=0.01,rely=0.26)
+window_cb.place(relx=0.05,rely=0.54)
 window_cb.current(0)
 
 
+#analgo filter type
 
-
-met=tk.Label(form_left,text="IIR")
-met.place(relx=0.01,rely=0.4)
+met=tk.Label(form,text="IIR")
+met.place(relx=0.01,rely=0.8)
 #Filter type combobox
 
 #graphics of interest
 image_frame=tk.LabelFrame(main,text="Graphics of Interest")
-image_frame.place(relx=0.40,rely=0.01,relwidth=0.59,relheight=0.80)
+image_frame.place(relx=0.30,rely=0.01,relwidth=0.69,relheight=0.80)
 
 time_frame=tk.LabelFrame(image_frame,text="Time Domain")
 time_frame.place(relx=0.01,rely=0.01,relwidth=0.48,relheight=0.98)
@@ -161,6 +156,6 @@ filterresponse.place(relx=0.01,rely=0.51,relwidth=0.98,relheight=0.48)
 
 #play audio and export results
 results_frame=tk.LabelFrame(main, text="Results")
-results_frame.place(relx=0.40,rely=0.82,relwidth=0.59,relheight=0.17)
+results_frame.place(relx=0.30,rely=0.82,relwidth=0.69,relheight=0.17)
 
 window.mainloop()

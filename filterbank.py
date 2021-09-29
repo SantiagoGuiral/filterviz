@@ -28,7 +28,7 @@ def type_view(event):
 fmethods=('FIR','IIR')
 ftypes=('Lowpass','Highpass','Bandpass','Bandstop')
 windows=('Default','Bartlett','Blackmann','Hamming','Hann','Square')
-fir_str=('Windowing','Freq. Sampling')
+fir_str=('Windowing','Freq. Sampling','Remez')
 iir_str=('Bessel','Butterworth','Chebyshev I','Chebyshev II','Elliptic')
 
 

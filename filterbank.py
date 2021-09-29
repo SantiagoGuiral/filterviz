@@ -26,10 +26,10 @@ def type_view(event):
 		txt.set("Fc2")
 
 fmethods=('FIR','IIR')
-ftypes=('Bandpass','High-pass','Low-pass','Stopband',)
+ftypes=('Lowpass','Highpass','Bandpass','Bandstop')
 windows=('Default','Bartlett','Blackmann','Hamming','Hann','Square')
 fir_str=('Windowing','Freq. Sampling')
-iir_str=('Butterworth')
+iir_str=('Bessel','Butterworth','Chebyshev I','Chebyshev II','Elliptic')
 
 
 #main window for the interface

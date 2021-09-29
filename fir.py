@@ -10,6 +10,7 @@ def fir_windowing(fs,ftype,window,BW,ripple,fc1,fc2=1,Adb=0):
 	bwn=(2*np.pi*BW)/fs
 
 	#Ripple in dB
+	ripple=ripple/100
 	rdb=20*np.log10(ripple)
 
 	#Choose the order of the filter (M)
@@ -91,13 +92,13 @@ def freq_sampling(fs,ftype,N,fc1,fc2=1):
 	hk=[]
 	
 	#Filter type
-	if (ftype=="Low-pass"):
+	if (ftype=="Lowpass"):
     for i in samples:
         if (fk*i<=fc1):
             hk.append(1)
         else:
             hk.append(0)
-	elif(ftype=="High-pass"):
+	elif(ftype=="Highpass"):
     	for i in samples:
         	if (fk*i<=fc1):
             	hk.append(0)
@@ -136,4 +137,4 @@ def freq_sampling(fs,ftype,N,fc1,fc2=1):
     
 	h=np.concatenate((hn,htemp))
 
-
+	return h

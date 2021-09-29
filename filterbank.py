@@ -25,9 +25,12 @@ def type_view(event):
 	else:
 		txt.set("Fc2")
 
-fmethods=('IIR','FIR')
+fmethods=('FIR','IIR')
 ftypes=('Bandpass','High-pass','Low-pass','Stopband',)
 windows=('Default','Bartlett','Blackmann','Hamming','Hann','Square')
+fir_str=('Windowing','Freq. Sampling')
+iir_str=('Butterworth')
+
 
 #main window for the interface
 window=tk.Tk()
@@ -66,6 +69,20 @@ method_cb['values']=fmethods
 method_cb.place(relx=0.05,rely=0.05)
 #method_cb.grid(padx=(15,0))
 method_cb.current(0)
+
+#FIR or IIR method
+ir_label=tk.Label(form,text="Select the FIR method")
+ir_label.place(relx=0.05,rely=0.02)
+#ir_label.grid(padx=(15,0),pady=(30,0))
+
+ir_str=tk.StringVar()
+ir_cb=ttk.Combobox(form,width=20,textvariable=ir_str)
+ir_cb['state']='readonly'
+ir_cb['values']=firmethods
+ir_cb.place(relx=0.05,rely=0.05)
+#ir_cb.grid(padx=(15,0))
+ir_cb.current(0)
+
 
 #Filter type combobox
 type_label=tk.Label(form,text="Select the Filter Band")

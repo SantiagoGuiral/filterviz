@@ -32,16 +32,16 @@ def fir_windowing(fs,ftype,window,BW,ripple,fc1,fc2=1,Adb=0):
 	n=np.arange(int(-M/2),int(M/2+1))
 
 	#Determines the Filter type 
-	if (ftype=="Low-pass"):
+	if (ftype=="Lowpass"):
     	hx=(wc1/np.pi)*(np.sin(wc1*n)/wc1*n)
 	    hx[int(M/2)]=(wc1/np.pi)
-	elif (ftype=="High-pass"):
+	elif (ftype=="Highpass"):
 	    hx=-(wc1/np.pi)*(np.sin(wc1*n)/wc1*n)
 	    hx[int(M/2)]=1-(wc1/np.pi)
-	elif (ftype=="Band-pass"):
+	elif (ftype=="Bandpass"):
 	    hx=((wc2/np.pi)*np.sin(n*wc2))/(n*wc2)-((wc1/np.pi)*np.sin(n*wc1))/(n*wc1)
 	    hx[int(M/2)]=(1/np.pi)*(wc2-wc1)
-	elif (ftype=="Band-stop"):
+	elif (ftype=="Bandstop"):
 	    hx=((wc1/np.pi)*np.sin(n*wc1))/(n*wc1)-((wc2/np.pi)*np.sin(n*wc2))/(n*wc2)
 	    hx[int(M/2)]=1-((1/np.pi)*(wc2-wc1))
 
@@ -75,4 +75,65 @@ def fir_windowing(fs,ftype,window,BW,ripple,fc1,fc2=1,Adb=0):
 	hn=hn*A
 
 	return hn
+
+def freq_sampling(fs,ftype,N,fc1,fc2=1):
+	#Limit for the IFT
+	if (N%2!=0):
+    	limit=(N-1)/2
+	else:
+    	limit=N/2 - 1
+
+	limit=int(limit)
+
+	#Sampling steps
+	fk=fs/N
+	samples=[i if N%2 else i+0.5 for i in range(limit+1)]
+	hk=[]
+	
+	#Filter type
+	if (ftype=="Low-pass"):
+    for i in samples:
+        if (fk*i<=fc1):
+            hk.append(1)
+        else:
+            hk.append(0)
+	elif(ftype=="High-pass"):
+    	for i in samples:
+        	if (fk*i<=fc1):
+            	hk.append(0)
+	        else:
+    	        hk.append(1)
+	elif(ftype=="Bandpass"):
+    	for i in samples:
+        	if (fk*i<=fc1 & fk*i>=fc2):
+            	hk.append(0)
+	        else:
+    	        hk.append(1)       
+	elif(ftype=="Bandstop"):
+    	for i in samples:
+        	if (fk*i>=fc1 & fk*i<=fc2):
+            	hk.append(0)
+	        else:
+    	        hk.append(1)
+
+
+	#Calculates the IFT
+	alfa=(N-1)/2
+
+	hn=np.zeros(limit+1)
+	for n in range(limit+1):
+    	acc=0
+	    for k in range(1,limit+1):
+	        acc+=2*hk[k]*np.cos((2*np.pi*k*(n-alfa))/N)
+	    acc=(1/N)*(acc+hk[0])
+	    hn[n]=acc
+       
+	#get the complete coeficients
+	if (N%2!=0):
+    	htemp=np.flip(hn[:-1])
+	else:
+    	htemp=np.flip(hn)
+    
+	h=np.concatenate((hn,htemp))
+
 

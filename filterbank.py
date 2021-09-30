@@ -256,7 +256,7 @@ listen_frame.configure(bg='white')
 
 record_label=tk.Label(recording_frame,text="Off: Not Recording")
 record_label.place(relx=0.05,rely=0.7)
-record_label.configure(bg='white',fg="red",font='Helvetica 18 bold')
+record_label.configure(bg='white',fg="red",font='bold')
 
 rec_btn=tk.Button(recording_frame,text="Record Audio",bg="black",fg="white",command=lambda m=1:threading_rec(m,record_label))
 rec_btn.place(relx=0.05,rely=0.2,relwidth=0.35,relheight=0.4)

@@ -211,11 +211,12 @@ iirmethods=('Bessel','Butterworth','Chebyshev I','Chebyshev II','Elliptic')
 
 #main window for the interface
 window=tk.Tk()
+window.tk.call('wm', 'iconphoto', window._w, tk.PhotoImage(file='icon.png'))
 w=1200
 h=900
 ws = window.winfo_screenwidth()
 hs = window.winfo_screenheight()
-x = (ws/2) - (w/2)    
+x = (ws/2) - (w/2)
 y = (hs/2) - (h/2)
 window.geometry('%dx%d+%d+%d' % (w, h, x, y))
 window.title("DSP Filter's Bank")

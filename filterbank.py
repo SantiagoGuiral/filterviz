@@ -3,8 +3,8 @@ import sounddevice as sd
 import soundfile as sf
 import queue
 import threading
-import sond
 from tkinter import ttk
+from tkinter import messagebox
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
 
@@ -133,28 +133,44 @@ def callback(indata, frames, time, status):
 
 #Functions to play, stop and record audio
 #The recording is done as a thread to prevent it being the main process
-def threading_rec(x):
-    if x == 1:
-        #If recording is selected, then the thread is activated
-        t1=threading.Thread(target= record_audio)
-        t1.start()
-    elif x == 2:
-        #To stop, set the flag to false
-        global recording
-        recording = False
-        messagebox.showinfo(message="Recording finished")
-    elif x == 3:
-        #To play a recording, it must exist.
-        if file_exists:
-            #Read the recording if it exists and play it
-            data, fs = sf.read("trial.wav", dtype='float32') 
-            sd.play(data,fs)
-            sd.wait()
-        else:
-            #Display and error if none is found
-            messagebox.showerror(message="Record something to play")
+def threading_rec(x,record_label):
 
-#Recording function
+	txt=tk.StringVar()
+	record_label.config(textvariable=txt)
+	if (x==1):
+		#If recording is selected, then the thread is activated
+		txt.set("On: Recording Audio")
+		record_label.config(fg="green")
+		t1=threading.Thread(target= record_audio)
+		t1.start()
+
+	elif (x==2):
+  		#To stop, set the flag to false
+		global recording
+		txt.set("Off: Not Recording")
+		record_label.config(fg="red")
+		recording = False
+		messagebox.showinfo(message="Recording finished")
+
+	elif (x==3 or x==4):
+		t2=threading.Thread(target=control_play,args=[x])
+		t2.start()
+
+def control_play(x):
+	if file_exists:
+		#Read the recording if it exists and play it
+		data, fs = sf.read("trial.wav", dtype='float32') 
+		if (x==3):
+			sd.play(data,fs)
+			sd.wait()
+		elif(x==4):
+			sd.stop()
+	else:
+    	#Display and error if none is found
+		messagebox.showerror(message="Record something to play")
+		txt.set("Off: Not Recording")
+		record_label.config(fg="red")
+
 def record_audio():
     #Declare global variables    
     global recording 
@@ -222,6 +238,30 @@ audioload_frame=tk.LabelFrame(main, text="Audio Input")
 audioload_frame.place(relx=0.25,rely=0.02,relwidth=0.74,relheight=0.2)
 audioload_frame.configure(bg='white')
 
+#Control of the playback
+recording_frame=tk.LabelFrame(audioload_frame)
+recording_frame.place(relx=0.01,rely=0.02,relwidth=0.48,relheight=0.96)
+recording_frame.configure(bg='white')
+
+listen_frame=tk.LabelFrame(audioload_frame)
+listen_frame.place(relx=0.51,rely=0.02,relwidth=0.48,relheight=0.96)
+listen_frame.configure(bg='white')
+
+record_label=tk.Label(recording_frame,text="Off: Not Recording")
+record_label.place(relx=0.05,rely=0.7)
+record_label.configure(bg='white',fg="red",font='Helvetica 18 bold')
+
+rec_btn=tk.Button(recording_frame,text="Record Audio",bg="black",fg="white",command=lambda m=1:threading_rec(m,record_label))
+rec_btn.place(relx=0.05,rely=0.2,relwidth=0.35,relheight=0.4)
+
+stop_btn=tk.Button(recording_frame,text="Stop Recording",bg="black",fg="white",command=lambda m=2:threading_rec(m,record_label))
+stop_btn.place(relx=0.55,rely=0.2,relwidth=0.35,relheight=0.4)
+
+play_btn=tk.Button(listen_frame,text="Play Recording",bg="black",fg="white",command=lambda m=3:threading_rec(m,record_label))
+play_btn.place(relx=0.05,rely=0.2,relwidth=0.35,relheight=0.4)
+
+pause_btn=tk.Button(listen_frame,text="Stop Playing",bg="black",fg="white",command=lambda m=4:threading_rec(m,record_label))
+pause_btn.place(relx=0.55,rely=0.2,relwidth=0.35,relheight=0.4)
 
 
 

@@ -3,6 +3,7 @@ import sounddevice as sd
 import soundfile as sf
 import queue
 import threading
+import pygame
 from tkinter import ttk
 from tkinter import messagebox
 from matplotlib.figure import Figure
@@ -152,24 +153,22 @@ def threading_rec(x,record_label):
 		recording = False
 		messagebox.showinfo(message="Recording finished")
 
-	elif (x==3 or x==4):
-		t2=threading.Thread(target=control_play,args=[x])
-		t2.start()
-
-def control_play(x):
+def start_play():
 	if file_exists:
 		#Read the recording if it exists and play it
-		data, fs = sf.read("trial.wav", dtype='float32') 
-		if (x==3):
-			sd.play(data,fs)
-			sd.wait()
-		elif(x==4):
-			sd.stop()
+		pygame.mixer.music.load("trial.wav")
+		pygame.mixer.music.play(loops=0)
+		#data, fs = sf.read("trial.wav", dtype='float32') 
+		#sd.play(data,fs)
+		#sd.wait()
 	else:
     	#Display and error if none is found
 		messagebox.showerror(message="Record something to play")
 		txt.set("Off: Not Recording")
 		record_label.config(fg="red")
+
+def stop_play():
+	pygame.mixer.music.stop()
 
 def record_audio():
     #Declare global variables    
@@ -195,6 +194,8 @@ q = queue.Queue()
 #Declare variables and initialise them
 recording = False
 file_exists = False
+
+pygame.mixer.init()
 
 fmethods=('FIR','IIR')
 ftypes=('Bandpass','Bandstop','Highpass','Lowpass')
@@ -257,12 +258,11 @@ rec_btn.place(relx=0.05,rely=0.2,relwidth=0.35,relheight=0.4)
 stop_btn=tk.Button(recording_frame,text="Stop Recording",bg="black",fg="white",command=lambda m=2:threading_rec(m,record_label))
 stop_btn.place(relx=0.55,rely=0.2,relwidth=0.35,relheight=0.4)
 
-play_btn=tk.Button(listen_frame,text="Play Recording",bg="black",fg="white",command=lambda m=3:threading_rec(m,record_label))
+play_btn=tk.Button(listen_frame,text="Play Recording",bg="black",fg="white",command=start_play)
 play_btn.place(relx=0.05,rely=0.2,relwidth=0.35,relheight=0.4)
 
-pause_btn=tk.Button(listen_frame,text="Stop Playing",bg="black",fg="white",command=lambda m=4:threading_rec(m,record_label))
+pause_btn=tk.Button(listen_frame,text="Stop Playing",bg="black",fg="white",command=stop_play)
 pause_btn.place(relx=0.55,rely=0.2,relwidth=0.35,relheight=0.4)
-
 
 
 #filter form

@@ -59,12 +59,35 @@ def view_ir(event,gain_label,gain_input,window_label,window_cb,bw_label,bw_input
 		att_label.grid_forget()
 		att_input.grid_forget()
 
-def view_fir_other(event):
-	pass
+def view_fir(event,window_label,window_cb,ripple_label,ripple_input,bw_label,bw_input,Ngain_label,Ngain_input):
 
-def view_fir_fs(event):
-	pass
+	txt=tk.StringVar()
+	Ngain_label.config(textvariable=txt)
 
+	if (fir_cb.get()=="Freq. Sampling"):
+		window_label.grid_forget()
+		window_cb.grid_forget()
+		bw_label.grid_forget()
+		bw_input.grid_forget()
+		ripple_label.grid_forget()
+		ripple_input.grid_forget()
+		txt.set("Filter Order")
+
+	elif (fir_cb.get()=="Remez"):
+		window_label.grid_forget()
+		window_cb.grid_forget()
+		ripple_label.grid_forget()
+		ripple_input.grid_forget()
+		txt.set("Filter Order")
+
+	else:
+		window_label.grid(row=11,padx=(20,0),pady=(5,0))
+		window_cb.grid(row=12,padx=(20,0),pady=(5,0))
+		ripple_label.grid(row=13,padx=(20,0),pady=(5,0))
+		ripple_input.grid(row=14,padx=(20,0),pady=(5,0))
+		bw_label.grid(row=15,padx=(20,0),pady=(5,0))
+		bw_input.grid(row=16,padx=(20,0),pady=(5,0))
+		txt.set("Gain [dB]")
 
 def help_view():
 	filewin = tk.Toplevel(window)
@@ -176,14 +199,14 @@ bw_input=tk.Entry(form)
 #bw_input.place(relx=0.05,rely=0.47,relwidth=0.4)
 bw_input.grid(row=16,padx=(25,0),pady=(5,0))
 
-#Gain
-gain_label=tk.Label(form,text="Gain [dB]")
+#Gain or Filter order
+Ngain_label=tk.Label(form,text="Gain [dB]")
 #gain_label.place(relx=0.05,rely=0.37)
-gain_label.grid(row=17,padx=(25,0),pady=(5,0))
+Ngain_label.grid(row=17,padx=(25,0),pady=(5,0))
 
-gain_input=tk.Entry(form)
+Ngain_input=tk.Entry(form)
 #gain_input.place(relx=0.05,rely=0.4,relwidth=0.4)
-gain_input.grid(row=18,padx=(25,0),pady=(5,0))
+Ngain_input.grid(row=18,padx=(25,0),pady=(5,0))
 
 #First rows
 #Filter method combobox
@@ -219,14 +242,14 @@ ir_label=tk.Label(form,text="Select the FIR method")
 #ir_label.place(relx=0.05,rely=0.02)
 ir_label.grid(row=5,padx=(25,0),pady=(5,0))
 
-ir_str=tk.StringVar()
-ir_cb=ttk.Combobox(form,width=22,textvariable=ir_str)
-ir_cb['state']='readonly'
-ir_cb['values']=firmethods
+fir_str=tk.StringVar()
+fir_cb=ttk.Combobox(form,width=22,textvariable=fir_str)
+fir_cb['state']='readonly'
+fir_cb['values']=firmethods
 #ir_cb.place(relx=0.05,rely=0.05)
-ir_cb.grid(row=6,padx=(25,0),pady=(5,0))
-ir_cb.current(0)
-#ir_cb.bind("<<ComboboxSelected>>",lambda event: type_view(event,test_label))
+fir_cb.grid(row=6,padx=(25,0),pady=(5,0))
+fir_cb.current(0)
+fir_cb.bind("<<ComboboxSelected>>",lambda event: view_fir(event,window_label,window_cb,ripple_label,ripple_input,bw_label,bw_input,Ngain_label,Ngain_input))
 
 #graphics of interest
 image_frame=tk.LabelFrame(main,text="Graphics of Interest")

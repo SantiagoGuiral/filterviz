@@ -42,6 +42,14 @@ def plot_filter():
 	pass
 
 def calculate_filter(fc1,fc2,ripple,bw,ngain,window,band,firtype,N,att):
+
+	if (method_cb.get()=="FIR"):
+		print(f'fc1 {fc1}')
+	elif (method_cb.get()=="IIR"):
+		print(f'fc2 {fc2}')
+	elif (method_cb.get()=="Ideal"):
+		print(f'bw {bw}')
+
 	print(f'fc1 {fc1}')
 	print(f'fc2 {fc2}')
 	print(f'bw {bw}')
@@ -294,7 +302,7 @@ filtered_exists = False
 
 pygame.mixer.init()
 
-fmethods=('FIR','IIR','Collins')
+fmethods=('FIR','IIR','Ideal')
 ftypes=('Bandpass','Bandstop','Highpass','Lowpass')
 windows=('Default','Bartlett','Blackmann','Hamming','Hann','Square')
 firmethods=('Windowing','Freq. Sampling','Remez')
@@ -527,7 +535,7 @@ results_frame=tk.LabelFrame(main,text="Calculate Filter")
 results_frame.place(relx=0.01,rely=0.72,relwidth=0.20,relheight=0.27)
 results_frame.configure(bg='white')
 
-btn_calculate=tk.Button(results_frame,text="Calculate",fg="white",bg="black",command=lambda:calculate_filter(fc1_input.get(),fc2_input.get(),ripple_input.get(),bw_input.get(),Ngain_input.get(),window_cb.get(),type_cb.get(),fir_cb.get(),N_input.get(),att_input.get()))
+btn_calculate=tk.Button(results_frame,text="Export",fg="white",bg="black",command=lambda:calculate_filter(fc1_input.get(),fc2_input.get(),ripple_input.get(),bw_input.get(),Ngain_input.get(),window_cb.get(),type_cb.get(),fir_cb.get(),N_input.get(),att_input.get()))
 btn_calculate.place(relx=0.2,rely=0.2,relwidth=0.6,relheight=0.2)
 
 btn_save=tk.Button(results_frame,text="Save",fg="white",bg="black")

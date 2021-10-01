@@ -37,7 +37,7 @@ def analog_irr (fs,N,ftype,fc1,fc2=1,att=3,ripple=5):
 	elif(analog=="Bessel"):
 	    b,a=signal.bessel(N, wc, ftype, analog='True')
 	elif(analog=="Elliptic"):
-    	b,a=signal.ellip(N, ripple, att, wc, ftype, analog='True')
+		b,a=signal.ellip(N, ripple, att, wc, ftype, analog='True')
 	
 	#Bilinear Transform analog to digital filter
 	z,p=signal.bilinear(b,a,fs=fs)

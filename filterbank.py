@@ -8,6 +8,9 @@ import math
 import numpy as np
 import scipy.signal as signal
 import matplotlib.pyplot as plt
+import filterc as fprod
+import filterfir as ffir
+import filteriir as fiir
 from scipy.io.wavfile import read, write
 from tkinter import ttk
 from tkinter import messagebox

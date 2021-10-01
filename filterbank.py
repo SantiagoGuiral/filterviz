@@ -58,7 +58,7 @@ def view_fc(event,fc2_label,fc2_input):
 		fc2_label.grid(row=9)
 		fc2_input.grid(row=10)
 
-def view_ir(event,Ngain_label,Ngain_input,window_label,window_cb,bw_label,bw_input):
+def view_filters(event,Ngain_label,Ngain_input,window_label,window_cb,bw_label,bw_input,ripple_label,ripple_input):
 
 	txt1=tk.StringVar()
 	bw_label.config(textvariable=txt1)
@@ -79,11 +79,16 @@ def view_ir(event,Ngain_label,Ngain_input,window_label,window_cb,bw_label,bw_inp
 		txt2.set("Attenuation [dB]")
 		txt3.set("Select the IIR Method")
 
+		ir_label.grid(row=5)
 		iir_cb.grid(row=6)
 		N_input.grid(row=16)
 		att_input.grid(row=18)
+		ripple_label.grid(row=13)
+		ripple_input.grid(row=14)
 
-	else:
+	elif(method_cb.get()=="FIR"):
+		ripple_label.grid(row=13)
+		ripple_input.grid(row=14)
 		Ngain_label.grid(row=17)
 		Ngain_input.grid(row=18)
 		window_label.grid(row=11)
@@ -91,6 +96,7 @@ def view_ir(event,Ngain_label,Ngain_input,window_label,window_cb,bw_label,bw_inp
 		bw_label.grid(row=15)
 		bw_input.grid(row=16)
 		fir_cb.grid(row=6)
+		ir_label.grid(row=5)
 
 		txt1.set("Transition Band Width")
 		txt2.set("Gain [dB]")
@@ -99,6 +105,20 @@ def view_ir(event,Ngain_label,Ngain_input,window_label,window_cb,bw_label,bw_inp
 		N_input.grid_forget()
 		att_input.grid_forget()
 		iir_cb.grid_forget()
+	else:
+		window_label.grid_forget()
+		window_cb.grid_forget()
+		ripple_label.grid_forget()
+		ripple_input.grid_forget()
+		bw_label.grid_forget()	
+		bw_input.grid_forget()
+		Ngain_label.grid_forget()
+		Ngain_input.grid_forget()
+		N_input.grid_forget()
+		att_input.grid_forget()
+		ir_label.grid_forget()
+		iir_cb.grid_forget()
+		fir_cb.grid_forget()
 
 def view_analog(event,Ngain_label,att_input,ripple_label,ripple_input):
 
@@ -271,7 +291,7 @@ filtered_exists = False
 
 pygame.mixer.init()
 
-fmethods=('FIR','IIR')
+fmethods=('FIR','IIR','Collins')
 ftypes=('Bandpass','Bandstop','Highpass','Lowpass')
 windows=('Default','Bartlett','Blackmann','Hamming','Hann','Square')
 firmethods=('Windowing','Freq. Sampling','Remez')
@@ -435,7 +455,7 @@ method_cb['values']=fmethods
 #method_cb.place(relx=0.05,rely=0.05)
 method_cb.grid(row=2)
 #method_cb.current(0)
-method_cb.bind("<<ComboboxSelected>>",lambda event: view_ir(event,Ngain_label,Ngain_input,window_label,window_cb,bw_label,bw_input))
+method_cb.bind("<<ComboboxSelected>>",lambda event: view_filters(event,Ngain_label,Ngain_input,window_label,window_cb,bw_label,bw_input,ripple_label,ripple_input))
 
 #Filter type combobox
 type_label=tk.Label(form,text="Select the Filter Band")

@@ -4,6 +4,9 @@ import math
 
 def fir_windowing(fs,ftype,window,BW,ripple,fc1,fc2=1,Adb=0):
 
+	if (Adb==""):
+		Adb=0
+
 	#Normalize the frequencies
 	wc1=(2*np.pi*fc1)/fs
 	wc2=(2*np.pi*fc2)/fs
@@ -134,5 +137,22 @@ def freq_sampling(fs,ftype,N,fc1,fc2=1):
 		htemp=np.flip(hn)
 
 	h=np.concatenate((hn,htemp))
+	return h
 
+def remezf(fs,N,bw,ftype,fc1,fc2=1):
+
+	if (ftype=="Lowpass"):
+		bands=[0,fc1,fc1+BW,fs/2]
+		desired=[1,0]
+	elif(ftype=="Highpass"):
+		bands=[0,fc1-BW,fc1,fs/2]
+		desired=[0,1]
+	elif(ftype=="Bandpass"):
+		bands=[0,fc1-BW,fc1,fc2,fc2+BW,fs/2]
+		desired=[0,1,0] 
+	elif(ftype=="Bandstop"):
+		bands=[0,fc1-BW,fc1,fc2,fc2+BW,fs/2]
+		desired=[1,0,1]
+
+	h=signal.remez(N,bands,desired,fs=fs)
 	return h

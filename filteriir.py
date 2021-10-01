@@ -2,7 +2,11 @@ import numpy as np
 import scipy.signal as signal
 import math
 
-def analog_irr (fs,N,ftype,fc1,fc2=1,att=3,ripple=5):
+def analog_irr(fs,N,ftype,analog,fc1,fc2=1,att=3,ripple=5):
+
+	if (att=="" or ripple==""):
+		att=3
+		ripple=5
 
 	#Normalize frequencies
 	Td=1/fs

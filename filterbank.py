@@ -8,7 +8,7 @@ import math
 import numpy as np
 import scipy.signal as signal
 import matplotlib.pyplot as plt
-import filterc as fprod
+import filterc as fideal
 import filterfir as ffir
 import filteriir as fiir
 from scipy.io.wavfile import read, write
@@ -38,28 +38,176 @@ def plot_time():
 		canvas.draw()
 		canvas.get_tk_widget().place(relx=0,rely=0,relwidth=1,relheight=1)
 
-def plot_filter():
-	pass
+	else:
+    	#Display and error if none is found
+		messagebox.showerror(message="First record something")
+		txt.set("Off: Not Recording")
+		record_label.config(fg="red")
 
-def calculate_filter(fc1,fc2,ripple,bw,ngain,window,band,firtype,N,att):
+def plot_filter3(H,fs):
 
-	if (method_cb.get()=="FIR"):
-		print(f'fc1 {fc1}')
-	elif (method_cb.get()=="IIR"):
-		print(f'fc2 {fc2}')
-	elif (method_cb.get()=="Ideal"):
-		print(f'bw {bw}')
+	M=len(H)
+	new_fs=fs/M
+	freq=np.arange(0,(M-1)*new_fs,new_fs)
 
-	print(f'fc1 {fc1}')
-	print(f'fc2 {fc2}')
-	print(f'bw {bw}')
-	print(f'ripple {ripple}')
-	print(f'ngain {ngain}')
-	print(f'window {window}')
-	print(f'band {band}')
-	print(f'firtype {firtype}')
-	print(f'N {N}')
-	print(f'att {att}')
+	fig2=Figure(figsize=(4,3),dpi=100)
+	fplot=fig.add_subplot(111)
+	fplot.plot(freq,H,linewidth=2,color="b")
+	fplot.set_xlabel("F [Hz]")
+	fplot.set_ylabel("Magnitude")
+	#tplot.set_title("Audio Signal")
+	fplot.grid()
+
+	canvas2=FigureCanvasTkAgg(fig2,master=freqplot)
+	canvas2.draw()
+	canvas2.get_tk_widget().place(relx=0,rely=0,relwidth=1,relheight=1)
+
+
+def plot_filter2(W,H):
+
+	Mag = 20*np.log10(abs(H))  
+	Freq = W*fs/(2*np.pi)
+
+	fig2=Figure(figsize=(4,3),dpi=100)
+	fplot=fig.add_subplot(111)
+	fplot.plot(Freq,Mag,linewidth=2,color="b")
+	fplot.set_xlabel("F [Hz]")
+	fplot.set_ylabel("Magnitude [dB]")
+	#tplot.set_title("Audio Signal")
+	fplot.grid()
+
+	canvas2=FigureCanvasTkAgg(fig2,master=freqplot)
+	canvas2.draw()
+	canvas2.get_tk_widget().place(relx=0,rely=0,relwidth=1,relheight=1)
+
+def plot_filter1(W,H,fs):
+	
+	w=(W-np.pi)*fs/(2*np.pi)
+	h=np.abs(np.fft.fftshift(H)
+
+	fig2=Figure(figsize=(4,3),dpi=100)
+	fplot=fig.add_subplot(111)
+	fplot.plot(WW,HH,linewidth=2,color="b")
+	fplot.set_xlabel("F [Hz]")
+	fplot.set_ylabel("Magnitude")
+	#tplot.set_title("Audio Signal")
+	fplot.grid()
+
+	canvas2=FigureCanvasTkAgg(fig2,master=freqplot)
+	canvas2.draw()
+	canvas2.get_tk_widget().place(relx=0,rely=0,relwidth=1,relheight=1)
+
+def plot_phase2(z,p):
+
+	w,h=signal.freqz(z,p,1024)
+	angles=np.unwrap(np.angle(h))	
+
+	fig3=Figure(figsize=(4,3),dpi=100)
+	pplot=fig.add_subplot(111)
+	pplot.plot(w,angles,linewidth=2,color="b")
+	pplot.set_xlabel("F [Hz]")
+	pplot.set_ylabel("Angle [Rad]")
+	#tplot.set_title("Audio Signal")
+	fplot.grid()
+
+	canvas3=FigureCanvasTkAgg(fig3,master=pplot)
+	canvas3.draw()
+	canvas3.get_tk_widget().place(relx=0,rely=0,relwidth=1,relheight=1)
+
+def plot_phase(hn):
+
+	w,h=signal.freqz(hn)
+	angles=np.unwrap(np.angle(h))	
+
+	fig3=Figure(figsize=(4,3),dpi=100)
+	pplot=fig.add_subplot(111)
+	pplot.plot(w,angles,linewidth=2,color="b")
+	pplot.set_xlabel("F [Hz]")
+	pplot.set_ylabel("Angle [Rad]")
+	#tplot.set_title("Audio Signal")
+	fplot.grid()
+
+	canvas3=FigureCanvasTkAgg(fig3,master=pplot)
+	canvas3.draw()
+	canvas3.get_tk_widget().place(relx=0,rely=0,relwidth=1,relheight=1)
+
+def error_message():
+	messagebox.showerror(message="Please enter all the required parameters")
+
+def calculate_filter(fc1,fc2,ripple,bw,ngain,window,band,firtype,iirtype,N,att):
+
+	if file_exists:
+		file_audio=('./audios/recording.wav')
+		fs,x=read(file_audio)
+		x=x/float(np.max(np.abs(x)))
+		x=x-np.mean(x)
+
+		if (method_cb.get()=="FIR"):
+			if (firtype=="Windowing"):
+				if (band=="" or window=="" or bw=="" or ripple=="" or fc1==""):
+					error_message()
+				else:
+					hn=ffir.fir_windowing(fs,band,window,bw,ripple,fc1,fc2,ngain)
+					w_win,h_win=signal.freqz(hn,1,whole=True,woN=1024)
+					plot_filter1(w_win,h_win,fs)
+					plot_phase(hn)
+					filter_fir(hn,x,fs)
+			elif(firtype=="Freq. Sampling"):
+				if(band=="" or N=="" or fc1==""):
+					error_message()
+				else:
+					hn=ffir.freq_sampling(fs,band,N,fc1,fc2)
+					W,H=signal.freqz(hn,1,whole=True,worN=1024)
+					plot_filter1(W,H,fs)
+					plot_phase(hn)
+					filter_fir(hn,x,fs)
+			elif(firtype=="Remez"):		
+				if (N=="" or bw =="" or band=="" or fc1==""):
+					error_message()
+				else:
+					hn=ffir_remezf(fs,N,bw,band,fc1,fc2)
+					W,H=signal.freqz(hn,1,1024)
+					plot_filter1(W,H,fs)
+					plot_phase(hn)
+					filter_fir(hn,x,fs)
+
+		elif (method_cb.get()=="IIR"):
+			if (N=="" or band=="" or iirtype=="" or fc1==""):
+				error_message()
+			else:
+				z,p=fiir.analog_irr(fs,N,band,iirtype,fc1,fc2,att,ripple)
+				W,H=signal.freqz(z,p,1024)
+				plot_filter2(W,H)
+				plot_phase2(z,p)
+				filter_irr(z,p,x,fs)
+
+		elif (method_cb.get()=="Ideal"):
+			if(band=="" or fc1==""):
+				error_message()
+			else:
+				xf,H,ftx=fideal.clip(x,fs,band,fc1,fc2)
+				plot_filter3(H,fs)
+				filter_ideal(xf,fs)
+
+	else:
+    	#Display and error if none is found
+		messagebox.showerror(message="First record something")
+		txt.set("Off: Not Recording")
+		record_label.config(fg="red")
+
+def filter_fir(hn,x,fs):
+	y=signal.lfilter(hn,1,x)
+	write("./audios/filtered.wav",fs,y.astype(np.int16))
+	filtered_file=True
+
+def filter_iir(z,p,x,fs):
+	y=signal.lfilter(z,p,x)
+	write("./audios/filtered.wav",fs,y.astype(np.int16))
+	filtered_file=True
+
+def filter_ideal(xf,fs):
+	write("./audios/filtered.wav",fs,xf.astype(np.int16))
+	filtered_file=True
 
 def view_fc(event,fc2_label,fc2_input):
 	if (type_cb.get()=="Lowpass" or type_cb.get()=="Highpass"):
@@ -243,7 +391,7 @@ def threading_rec(x,record_label):
 		txt.set("Off: Not Recording")
 		record_label.config(fg="red")
 		recording = False
-		messagebox.showinfo(message="Recording finished")
+		messagebox.showinfo(message="Recording Finished")
 		plot_time()
 
 def start_play():
@@ -267,7 +415,7 @@ def record_audio():
     recording= True   
     global file_exists 
     #Create a file to save the audio
-    messagebox.showinfo(message="Recording Audio. Speak into the mic")
+    messagebox.showinfo(message="Recording Audio")
     with sf.SoundFile("./audios/recording.wav", mode='w', samplerate=44100,
                         channels=2) as file:
     #Create an input stream to record audio without a preset time
@@ -535,10 +683,10 @@ results_frame=tk.LabelFrame(main,text="Calculate Filter")
 results_frame.place(relx=0.01,rely=0.72,relwidth=0.20,relheight=0.27)
 results_frame.configure(bg='white')
 
-btn_calculate=tk.Button(results_frame,text="Export",fg="white",bg="black",command=lambda:calculate_filter(fc1_input.get(),fc2_input.get(),ripple_input.get(),bw_input.get(),Ngain_input.get(),window_cb.get(),type_cb.get(),fir_cb.get(),N_input.get(),att_input.get()))
+btn_calculate=tk.Button(results_frame,text="Calculate",fg="white",bg="black",command=lambda:calculate_filter(fc1_input.get(),fc2_input.get(),ripple_input.get(),bw_input.get(),Ngain_input.get(),window_cb.get(),type_cb.get(),fir_cb.get(),iir_cb.get(),N_input.get(),att_input.get()))
 btn_calculate.place(relx=0.2,rely=0.2,relwidth=0.6,relheight=0.2)
 
-btn_save=tk.Button(results_frame,text="Save",fg="white",bg="black")
+btn_save=tk.Button(results_frame,text="Export",fg="white",bg="black")
 btn_save.place(relx=0.2,rely=0.6,relwidth=0.6,relheight=0.21)
 
 window.mainloop()

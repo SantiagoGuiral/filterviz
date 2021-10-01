@@ -2,10 +2,6 @@ import numpy as np
 
 def clip(x_in,fs,ftype,fc1,fc2=1):
 
-	#Normalize the audio
-	x_in=x_in/float(np.max(np.abs(x_in)))
-	x_in=x_in-np.mean(x_in)
-
 	#design of the filter
 	fbins=2**int(np.ceil(np.log2(len(x_in)))) #M
 	u=fbins/fs
@@ -37,5 +33,5 @@ def clip(x_in,fs,ftype,fc1,fc2=1):
     #time/sampling-domain signal
 	y=np.fft.ifft(Y,fbins)[:len(x_in)]
 
-	return y, Y, X
+	return y, H, X
 

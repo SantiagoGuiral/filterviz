@@ -38,16 +38,17 @@ def plot_time():
 def plot_filter():
 	pass
 
-def calculate_fir(fc1,fc2,ripple,bw,ngain,window,band,firtype,N,att):
-	print(fc1)
-	print(fc2)
-	print(ripple)
-	print(bw)
-	print(ngain)
-	print(window)
-	print(band)
-	print(firtype)
-
+def calculate_filter(fc1,fc2,ripple,bw,ngain,window,band,firtype,N,att):
+	print(f'fc1 {fc1}')
+	print(f'fc2 {fc2}')
+	print(f'bw {bw}')
+	print(f'ripple {ripple}')
+	print(f'ngain {ngain}')
+	print(f'window {window}')
+	print(f'band {band}')
+	print(f'firtype {firtype}')
+	print(f'N {N}')
+	print(f'att {att}')
 
 def view_fc(event,fc2_label,fc2_input):
 	if (type_cb.get()=="Lowpass" or type_cb.get()=="Highpass"):
@@ -57,14 +58,14 @@ def view_fc(event,fc2_label,fc2_input):
 		fc2_label.grid(row=9)
 		fc2_input.grid(row=10)
 
-
 def view_ir(event,Ngain_label,Ngain_input,window_label,window_cb,bw_label,bw_input):
 
 	txt1=tk.StringVar()
 	bw_label.config(textvariable=txt1)
-
 	txt2=tk.StringVar()
 	Ngain_label.config(textvariable=txt2)
+	txt3=tk.StringVar()
+	ir_label.config(textvariable=txt3)
 
 	global N_input, att_input
 	if (method_cb.get()=="IIR"):
@@ -72,13 +73,14 @@ def view_ir(event,Ngain_label,Ngain_input,window_label,window_cb,bw_label,bw_inp
 		window_label.grid_forget()
 		window_cb.grid_forget()
 		bw_input.grid_forget()
+		fir_cb.grid_forget()
+		
 		txt1.set("Filter Order")
 		txt2.set("Attenuation [dB]")
-	
-		N_input=tk.Entry(form)
-		N_input.grid(row=16)
+		txt3.set("Select the IIR Method")
 
-		att_input=tk.Entry(form)
+		iir_cb.grid(row=6)
+		N_input.grid(row=16)
 		att_input.grid(row=18)
 
 	else:
@@ -88,11 +90,41 @@ def view_ir(event,Ngain_label,Ngain_input,window_label,window_cb,bw_label,bw_inp
 		window_cb.grid(row=12)
 		bw_label.grid(row=15)
 		bw_input.grid(row=16)
+		fir_cb.grid(row=6)
 
-		txt1.set("Transition Band [dB]")
+		txt1.set("Transition Band Width")
 		txt2.set("Gain [dB]")
+		txt3.set("Select the FIR Method")
+
 		N_input.grid_forget()
 		att_input.grid_forget()
+		iir_cb.grid_forget()
+
+def view_analog(event,Ngain_label,att_input,ripple_label,ripple_input):
+
+	if (iir_cb.get()=="Bessel" or iir_cb.get()=="Butterworth"):
+		Ngain_label.grid_forget()
+		att_input.grid_forget()
+		ripple_label.grid_forget()
+		ripple_input.grid_forget()
+
+	elif (iir_cb.get()=="Chebyshev I"):
+		Ngain_label.grid_forget()
+		att_input.grid_forget()
+		ripple_label.grid(row=13)
+		ripple_input.grid(row=14)
+
+	elif (iir_cb.get()=="Chebyshev I"):
+		ripple_label.grid_forget()
+		ripple_input.grid_forget()
+		Ngain_label.grid(row=17)
+		att_input.grid(row=18)
+
+	elif (iir_cb.get()=="Elliptic"):
+		ripple_label.grid(row=13)
+		ripple_input.grid(row=14)
+		Ngain_label.grid(row=17)
+		att_input.grid(row=18)
 
 def view_fir(event,window_label,window_cb,ripple_label,ripple_input,bw_label,bw_input,Ngain_label,Ngain_input):
 
@@ -235,6 +267,7 @@ q = queue.Queue()
 #Declare variables and initialise them
 recording = False
 file_exists = False
+filtered_exists = False
 
 pygame.mixer.init()
 
@@ -243,7 +276,6 @@ ftypes=('Bandpass','Bandstop','Highpass','Lowpass')
 windows=('Default','Bartlett','Blackmann','Hamming','Hann','Square')
 firmethods=('Windowing','Freq. Sampling','Remez')
 iirmethods=('Bessel','Butterworth','Chebyshev I','Chebyshev II','Elliptic')
-
 
 #main window for the interface
 window=tk.Tk()
@@ -312,14 +344,11 @@ filtered_frame=tk.LabelFrame(main, text="Results")
 filtered_frame.place(relx=0.74,rely=0.01,relwidth=0.25,relheight=0.16)
 filtered_frame.configure(bg="white")
 
-
 playf_btn=tk.Button(filtered_frame,text="Play Filtered",bg="black",fg="white",command=start_filtered)
 playf_btn.place(relx=0.05,rely=0.2,relwidth=0.4,relheight=0.4)
 
 pausef_btn=tk.Button(filtered_frame,text="Stop Playing",bg="black",fg="white",command=stop_filtered)
 pausef_btn.place(relx=0.55,rely=0.2,relwidth=0.4,relheight=0.4)
-
-
 
 #filter form
 form=tk.LabelFrame(main,text="Input Design Parameters")
@@ -350,7 +379,7 @@ fc2_input=tk.Entry(form)
 fc2_input.grid(row=10)
 
 #Window type
-window_label=tk.Label(form,text="Select the window Type")
+window_label=tk.Label(form,text="Select the Window Type")
 #window_label.place(relx=0.05,rely=0.51)
 window_label.grid(row=11)
 window_label.configure(bg='white')
@@ -361,7 +390,7 @@ window_cb['state']='readonly'
 window_cb['values']=windows
 #window_cb.place(relx=0.05,rely=0.54)
 window_cb.grid(row=12)
-window_cb.current(0)
+#window_cb.current(0)
 
 #Ripple 
 ripple_label=tk.Label(form,text="Ripple %")
@@ -393,7 +422,6 @@ Ngain_input=tk.Entry(form)
 #gain_input.place(relx=0.05,rely=0.4,relwidth=0.4)
 Ngain_input.grid(row=18)
 
-#First rows
 #Filter method combobox
 method_label=tk.Label(form,text="Select the Method")
 #method_label.place(relx=0.05,rely=0.02)
@@ -406,7 +434,7 @@ method_cb['state']='readonly'
 method_cb['values']=fmethods
 #method_cb.place(relx=0.05,rely=0.05)
 method_cb.grid(row=2)
-method_cb.current(0)
+#method_cb.current(0)
 method_cb.bind("<<ComboboxSelected>>",lambda event: view_ir(event,Ngain_label,Ngain_input,window_label,window_cb,bw_label,bw_input))
 
 #Filter type combobox
@@ -421,11 +449,11 @@ type_cb['state']='readonly'
 type_cb['values']=ftypes
 #type_cb.place(relx=0.05,rely=0.12)
 type_cb.grid(row=4)
-type_cb.current(0)
+#type_cb.current(0)
 type_cb.bind("<<ComboboxSelected>>",lambda event: view_fc(event,fc2_label,fc2_input))
 
 #FIR or IIR method
-ir_label=tk.Label(form,text="Select the FIR method")
+ir_label=tk.Label(form,text="Select the FIR Method")
 #ir_label.place(relx=0.05,rely=0.02)
 ir_label.grid(row=5)
 ir_label.configure(bg='white')
@@ -436,8 +464,17 @@ fir_cb['state']='readonly'
 fir_cb['values']=firmethods
 #ir_cb.place(relx=0.05,rely=0.05)
 fir_cb.grid(row=6)
-fir_cb.current(0)
+#fir_cb.current(0)
 fir_cb.bind("<<ComboboxSelected>>",lambda event: view_fir(event,window_label,window_cb,ripple_label,ripple_input,bw_label,bw_input,Ngain_label,Ngain_input))
+
+iir_str=tk.StringVar()
+iir_cb=ttk.Combobox(form,width=20,textvariable=fir_str)
+iir_cb['state']='readonly'
+iir_cb['values']=iirmethods
+#ir_cb.place(relx=0.05,rely=0.05)
+#iir_cb.grid(row=6)
+#iir_cb.current(0)
+iir_cb.bind("<<ComboboxSelected>>",lambda event: view_analog(event,Ngain_label,att_input,ripple_label,ripple_input))
 
 form.grid_columnconfigure(0,weight=1)
 
@@ -462,13 +499,12 @@ cplot=tk.LabelFrame(image_frame)
 cplot.place(relx=0.505,rely=0.505,relwidth=0.49,relheight=0.49)
 cplot.configure(bg='white')
 
-
 #Frame calculata and save filter
 results_frame=tk.LabelFrame(main,text="Calculate Filter")
 results_frame.place(relx=0.01,rely=0.72,relwidth=0.20,relheight=0.27)
 results_frame.configure(bg='white')
 
-btn_calculate=tk.Button(results_frame,text="Calculate",fg="white",bg="black",command=lambda:calculate_fir(fc1_input.get(),fc2_input.get(),ripple_input.get(),bw_input.get(),Ngain_input.get(),window_cb.get(),type_cb.get(),fir_cb.get(),N_input.get(),att_input.get()))
+btn_calculate=tk.Button(results_frame,text="Calculate",fg="white",bg="black",command=lambda:calculate_filter(fc1_input.get(),fc2_input.get(),ripple_input.get(),bw_input.get(),Ngain_input.get(),window_cb.get(),type_cb.get(),fir_cb.get(),N_input.get(),att_input.get()))
 btn_calculate.place(relx=0.2,rely=0.2,relwidth=0.6,relheight=0.2)
 
 btn_save=tk.Button(results_frame,text="Save",fg="white",bg="black")

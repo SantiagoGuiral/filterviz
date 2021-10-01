@@ -4,23 +4,50 @@ import soundfile as sf
 import queue
 import threading
 import pygame
+import math
+import numpy as np
+import scipy.signal as signal
+import matplotlib.pyplot as plt
+from scipy.io.wavfile import read, write
 from tkinter import ttk
 from tkinter import messagebox
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
 
-def plot_graphs():
-	fig=Figure(figsize=(5,5),dpi=100)
+def plot_time():
 
-	y=[i**2 for i in range(101)]
+	if file_exists:
+		file_audio=('./audios/recording.wav')
+		fs,x=read(file_audio)
+		x=x/float(np.max(np.abs(x)))
+		x=x-np.mean(x)
+		t=np.arange(0,float(len(x))/fs,1/fs)
 
-	plot1=fig.add_subplot(111)
-	plot1.plot(y)
-	plot1.grid()
+		fig=Figure(figsize=(4,3),dpi=100)
+		tplot=fig.add_subplot(111)
+		tplot.plot(t,x,linewidth=2,color="b")
+		tplot.set_xlabel("Time [S]")
+		tplot.set_ylabel("Amplitude [a.u]")
+		#tplot.set_title("Audio Signal")
+		tplot.grid()
 	
-	canvas=FigureCanvasTkAgg(fig,master=timeplot)
-	canvas.draw()
-	canvas.get_tk_widget().place(relx=0.03,rely=0.03,relwidth=0.94,relheight=0.94)
+		canvas=FigureCanvasTkAgg(fig,master=audioplot)
+		canvas.draw()
+		canvas.get_tk_widget().place(relx=0,rely=0,relwidth=1,relheight=1)
+
+def plot_filter():
+	pass
+
+def calculate_fir(fc1,fc2,ripple,bw,ngain,window,band,firtype,N,att):
+	print(fc1)
+	print(fc2)
+	print(ripple)
+	print(bw)
+	print(ngain)
+	print(window)
+	print(band)
+	print(firtype)
+
 
 def view_fc(event,fc2_label,fc2_input):
 	if (type_cb.get()=="Lowpass" or type_cb.get()=="Highpass"):
@@ -31,38 +58,40 @@ def view_fc(event,fc2_label,fc2_input):
 		fc2_input.grid(row=10)
 
 
-def view_ir(event,gain_label,gain_input,window_label,window_cb,bw_label,bw_input):
+def view_ir(event,Ngain_label,Ngain_input,window_label,window_cb,bw_label,bw_input):
+
+	txt1=tk.StringVar()
+	bw_label.config(textvariable=txt1)
+
+	txt2=tk.StringVar()
+	Ngain_label.config(textvariable=txt2)
+
+	global N_input, att_input
 	if (method_cb.get()=="IIR"):
-		gain_label.grid_forget()
-		gain_input.grid_forget()
+		Ngain_input.grid_forget()
 		window_label.grid_forget()
 		window_cb.grid_forget()
-		bw_label.grid_forget()
 		bw_input.grid_forget()
-
-		N_label=tk.Label(form,text="Filter Order")
-		N_label.grid()
-
+		txt1.set("Filter Order")
+		txt2.set("Attenuation [dB]")
+	
 		N_input=tk.Entry(form)
-		N_input.grid()
-
-		att_label=tk.Label(form,text="Attenuation [dB]")
-		att_label.grid()
+		N_input.grid(row=16)
 
 		att_input=tk.Entry(form)
-		att_input.grid()
+		att_input.grid(row=18)
 
 	else:
-		gain_label.grid(row=17)
-		gain_input.grid(row=18)
+		Ngain_label.grid(row=17)
+		Ngain_input.grid(row=18)
 		window_label.grid(row=11)
 		window_cb.grid(row=12)
 		bw_label.grid(row=15)
 		bw_input.grid(row=16)
 
-		N_label.grid_forget()
+		txt1.set("Transition Band [dB]")
+		txt2.set("Gain [dB]")
 		N_input.grid_forget()
-		att_label.grid_forget()
 		att_input.grid_forget()
 
 def view_fir(event,window_label,window_cb,ripple_label,ripple_input,bw_label,bw_input,Ngain_label,Ngain_input):
@@ -152,16 +181,13 @@ def threading_rec(x,record_label):
 		record_label.config(fg="red")
 		recording = False
 		messagebox.showinfo(message="Recording finished")
-		plot_graphs()
+		plot_time()
 
 def start_play():
 	if file_exists:
 		#Read the recording if it exists and play it
-		pygame.mixer.music.load("trial.wav")
+		pygame.mixer.music.load("./audios/recording.wav")
 		pygame.mixer.music.play(loops=0)
-		#data, fs = sf.read("trial.wav", dtype='float32') 
-		#sd.play(data,fs)
-		#sd.wait()
 	else:
     	#Display and error if none is found
 		messagebox.showerror(message="Record something to play")
@@ -179,7 +205,7 @@ def record_audio():
     global file_exists 
     #Create a file to save the audio
     messagebox.showinfo(message="Recording Audio. Speak into the mic")
-    with sf.SoundFile("trial.wav", mode='w', samplerate=44100,
+    with sf.SoundFile("./audios/recording.wav", mode='w', samplerate=44100,
                         channels=2) as file:
     #Create an input stream to record audio without a preset time
             with sd.InputStream(samplerate=44100, channels=2, callback=callback):
@@ -189,9 +215,19 @@ def record_audio():
                     #write into file
                     file.write(q.get())
 
-def on_configure(event):
-	canvas.configure(scrollregion=canvas.bbox('all'))
+def start_filtered():
+	if filtered_file:
+		#Read the recording if it exists and play it
+		pygame.mixer.music.load("./audios/filtered.wav")
+		pygame.mixer.music.play(loops=0)
+	else:
+    	#Display and error if none is found
+		messagebox.showerror(message="First calculate the filter")
+		txt.set("Off: Not Recording")
+		record_label.config(fg="red")
 
+def stop_filtered():
+	pygame.mixer.music.stop()
 
 #GUI Variables
 #Create a queue to contain the audio data
@@ -211,8 +247,8 @@ iirmethods=('Bessel','Butterworth','Chebyshev I','Chebyshev II','Elliptic')
 
 #main window for the interface
 window=tk.Tk()
-window.tk.call('wm', 'iconphoto', window._w, tk.PhotoImage(file='icon.png'))
-w=1200
+window.tk.call('wm', 'iconphoto', window._w, tk.PhotoImage(file='./resources/icon.png'))
+w=1250
 h=900
 ws = window.winfo_screenwidth()
 hs = window.winfo_screenheight()
@@ -243,7 +279,7 @@ main.configure(bg='white')
 
 #record audio wav
 audioload_frame=tk.LabelFrame(main, text="Audio Input")
-audioload_frame.place(relx=0.25,rely=0.02,relwidth=0.74,relheight=0.2)
+audioload_frame.place(relx=0.22,rely=0.01,relwidth=0.5,relheight=0.16)
 audioload_frame.configure(bg='white')
 
 #Control of the playback
@@ -260,37 +296,39 @@ record_label.place(relx=0.05,rely=0.7)
 record_label.configure(bg='white',fg="red",font='bold')
 
 rec_btn=tk.Button(recording_frame,text="Record Audio",bg="black",fg="white",command=lambda m=1:threading_rec(m,record_label))
-rec_btn.place(relx=0.05,rely=0.2,relwidth=0.35,relheight=0.4)
+rec_btn.place(relx=0.05,rely=0.2,relwidth=0.4,relheight=0.4)
 
 stop_btn=tk.Button(recording_frame,text="Stop Recording",bg="black",fg="white",command=lambda m=2:threading_rec(m,record_label))
-stop_btn.place(relx=0.55,rely=0.2,relwidth=0.35,relheight=0.4)
+stop_btn.place(relx=0.55,rely=0.2,relwidth=0.4,relheight=0.4)
 
 play_btn=tk.Button(listen_frame,text="Play Recording",bg="black",fg="white",command=start_play)
-play_btn.place(relx=0.05,rely=0.2,relwidth=0.35,relheight=0.4)
+play_btn.place(relx=0.05,rely=0.2,relwidth=0.4,relheight=0.4)
 
 pause_btn=tk.Button(listen_frame,text="Stop Playing",bg="black",fg="white",command=stop_play)
-pause_btn.place(relx=0.55,rely=0.2,relwidth=0.35,relheight=0.4)
+pause_btn.place(relx=0.55,rely=0.2,relwidth=0.4,relheight=0.4)
+
+#Output audio
+filtered_frame=tk.LabelFrame(main, text="Results")
+filtered_frame.place(relx=0.74,rely=0.01,relwidth=0.25,relheight=0.16)
+filtered_frame.configure(bg="white")
+
+
+playf_btn=tk.Button(filtered_frame,text="Play Filtered",bg="black",fg="white",command=start_filtered)
+playf_btn.place(relx=0.05,rely=0.2,relwidth=0.4,relheight=0.4)
+
+pausef_btn=tk.Button(filtered_frame,text="Stop Playing",bg="black",fg="white",command=stop_filtered)
+pausef_btn.place(relx=0.55,rely=0.2,relwidth=0.4,relheight=0.4)
+
 
 
 #filter form
-
-"""
-rootform=tk.LabelFrame(main,text="Input Design Parameters")
-rootform.place(relx=0.01,rely=0.02,relwidth=0.23,relheight=0.70)
-rootform.configure(bg='white')
-
-canvas=tk.Canvas(rootform)
-canvas.pack(side=tk.LEFT)
-
-scrollbar=tk.Scrollbar(rootform,command=canvas.yview)
-scrollbar.pack(side=tk.LEFT,fill='y')
-
-canvas.configure(yscrollcommand = scrollbar.set)
-canvas.bind('<Configure>',on_configure)
-"""
 form=tk.LabelFrame(main,text="Input Design Parameters")
-form.place(relx=0.01,rely=0.02,relwidth=0.23,relheight=0.70)
+form.place(relx=0.01,rely=0.01,relwidth=0.2,relheight=0.71)
 form.configure(bg='white')
+
+#global variables for responsive form
+N_input=tk.Entry(form)
+att_input=tk.Entry(form)
 
 #Cut frequencies
 fc1_label=tk.Label(form,text="Fc1 [Hz]")
@@ -359,7 +397,7 @@ Ngain_input.grid(row=18)
 #Filter method combobox
 method_label=tk.Label(form,text="Select the Method")
 #method_label.place(relx=0.05,rely=0.02)
-method_label.grid(row=1)
+method_label.grid(row=1,pady=(15,0))
 method_label.configure(bg='white')
 
 method_str=tk.StringVar()
@@ -369,7 +407,7 @@ method_cb['values']=fmethods
 #method_cb.place(relx=0.05,rely=0.05)
 method_cb.grid(row=2)
 method_cb.current(0)
-method_cb.bind("<<ComboboxSelected>>",lambda event: view_ir(event,gain_label,gain_input,window_label,window_cb,bw_label,bw_input))
+method_cb.bind("<<ComboboxSelected>>",lambda event: view_ir(event,Ngain_label,Ngain_input,window_label,window_cb,bw_label,bw_input))
 
 #Filter type combobox
 type_label=tk.Label(form,text="Select the Filter Band")
@@ -401,45 +439,39 @@ fir_cb.grid(row=6)
 fir_cb.current(0)
 fir_cb.bind("<<ComboboxSelected>>",lambda event: view_fir(event,window_label,window_cb,ripple_label,ripple_input,bw_label,bw_input,Ngain_label,Ngain_input))
 
+form.grid_columnconfigure(0,weight=1)
+
 #graphics of interest
 image_frame=tk.LabelFrame(main,text="Graphics of Interest")
-image_frame.place(relx=0.25,rely=0.25,relwidth=0.74,relheight=0.73)
+image_frame.place(relx=0.22,rely=0.18,relwidth=0.77,relheight=0.81)
 image_frame.configure(bg='white')
 
-time_frame=tk.LabelFrame(image_frame,text="Time Domain")
-time_frame.place(relx=0.01,rely=0.01,relwidth=0.48,relheight=0.98)
-time_frame.configure(bg='white')
+audioplot=tk.LabelFrame(image_frame)
+audioplot.place(relx=0.005,rely=0.005,relwidth=0.49,relheight=0.49)
+audioplot.configure(bg='white')
 
-timeplot=tk.Frame(time_frame)
-timeplot.place(relx=0.01,rely=0.01,relwidth=0.98,relheight=0.48)
-timeplot.configure(bg='white')
-
-filteredplot=tk.Frame(time_frame)
-filteredplot.place(relx=0.01,rely=0.51,relwidth=0.98,relheight=0.48)
-filteredplot.configure(bg='white')
-
-freq_frame=tk.LabelFrame(image_frame,text="Frequency Domain")
-freq_frame.place(relx=0.51,rely=0.01,relwidth=0.48,relheight=0.98)
-freq_frame.configure(bg='white')
-
-freqplot=tk.Frame(freq_frame)
-freqplot.place(relx=0.01,rely=0.01,relwidth=0.98,relheight=0.48)
+freqplot=tk.LabelFrame(image_frame)
+freqplot.place(relx=0.505,rely=0.005,relwidth=0.49,relheight=0.49)
 freqplot.configure(bg='white')
 
-filterresponse=tk.Frame(freq_frame)
-filterresponse.place(relx=0.01,rely=0.51,relwidth=0.98,relheight=0.48)
-filterresponse.configure(bg='white')
+pplot=tk.LabelFrame(image_frame)
+pplot.place(relx=0.005,rely=0.505,relwidth=0.49,relheight=0.49)
+pplot.configure(bg='white')
+
+cplot=tk.LabelFrame(image_frame)
+cplot.place(relx=0.505,rely=0.505,relwidth=0.49,relheight=0.49)
+cplot.configure(bg='white')
 
 
 #Frame calculata and save filter
 results_frame=tk.LabelFrame(main,text="Calculate Filter")
-results_frame.place(relx=0.01,rely=0.72,relwidth=0.23,relheight=0.26)
+results_frame.place(relx=0.01,rely=0.72,relwidth=0.20,relheight=0.27)
 results_frame.configure(bg='white')
 
-btn_calculate=tk.Button(results_frame,text="Calculate",fg="white",bg="black")
+btn_calculate=tk.Button(results_frame,text="Calculate",fg="white",bg="black",command=lambda:calculate_fir(fc1_input.get(),fc2_input.get(),ripple_input.get(),bw_input.get(),Ngain_input.get(),window_cb.get(),type_cb.get(),fir_cb.get(),N_input.get(),att_input.get()))
 btn_calculate.place(relx=0.2,rely=0.2,relwidth=0.6,relheight=0.2)
 
 btn_save=tk.Button(results_frame,text="Save",fg="white",bg="black")
-btn_save.place(relx=0.2,rely=0.6,relwidth=0.6,relheight=0.2)
+btn_save.place(relx=0.2,rely=0.6,relwidth=0.6,relheight=0.21)
 
 window.mainloop()

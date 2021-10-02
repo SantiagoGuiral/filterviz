@@ -34,12 +34,12 @@ def clip(x_in,fs,ftype,fc1,fc2=1):
 		return 1
 
 	#fourier transform of the signal
-	print(f'len x_in {len(x_in)}\t len fbin {fbins}')
 	X=np.fft.fft(x_in,fbins)
 	#filter product with the signal
 	Y=H*X
     #time/sampling-domain signal
 	y=np.fft.ifft(Y,fbins)[:len(x_in)]
+	y=np.real(y)
 	Hf=fftfreq(fbins,fs/fbins)
 
 	return y,H,Hf

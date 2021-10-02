@@ -3,6 +3,7 @@ import sounddevice as sd
 import soundfile as sf
 import queue
 import threading
+import wave
 import pygame
 import math
 import numpy as np
@@ -11,6 +12,7 @@ import matplotlib.pyplot as plt
 import filterc as fideal
 import filterfir as ffir
 import filteriir as fiir
+from playsound import playsound
 from scipy.io.wavfile import read, write
 from tkinter import ttk
 from tkinter import messagebox
@@ -216,11 +218,11 @@ def filter_fir(hn,x,fs):
 def filter_iir(z,p,x,fs):
 	y=signal.lfilter(z,p,x)
 	plot_ftime(y,fs)
-	write("./audios/filtered.wav",fs,y)
+	write("./audios/filtered.wav",fs,y.astype(np.float32))
 
 def filter_ideal(xf,fs):
 	plot_ftime(xf,fs)
-	write("./audios/filtered.wav",fs,xf)
+	write("./audios/filtered.wav",fs,xf.astype(np.float32))
 
 def view_fc(event,fc2_label,fc2_input):
 	if (type_cb.get()=="Lowpass" or type_cb.get()=="Highpass"):
@@ -434,8 +436,9 @@ def record_audio():
                     file.write(q.get())
 
 def start_filtered():
-	pygame.mixer.music.load("./audios/filtered.wav")
-	pygame.mixer.music.play(loops=0)
+	#pygame.mixer.music.load("./audios/filtered.wav")
+	#pygame.mixer.music.play(loops=0)
+	playsound("./audios/filtered.wav")
 
 def stop_filtered():
 	pygame.mixer.music.stop()
@@ -535,10 +538,10 @@ filtered_frame.place(relx=0.74,rely=0.01,relwidth=0.25,relheight=0.16)
 filtered_frame.configure(bg="white")
 
 playf_btn=tk.Button(filtered_frame,text="Play Filtered",bg="black",fg="white",command=start_filtered)
-playf_btn.place(relx=0.05,rely=0.2,relwidth=0.4,relheight=0.4)
+playf_btn.place(relx=0.3,rely=0.2,relwidth=0.4,relheight=0.4)
 
-pausef_btn=tk.Button(filtered_frame,text="Stop Playing",bg="black",fg="white",command=stop_filtered)
-pausef_btn.place(relx=0.55,rely=0.2,relwidth=0.4,relheight=0.4)
+#pausef_btn=tk.Button(filtered_frame,text="Stop Playing",bg="black",fg="white",command=stop_filtered)
+#pausef_btn.place(relx=0.55,rely=0.2,relwidth=0.4,relheight=0.4)
 
 #filter form
 form=tk.LabelFrame(main,text="Input Design Parameters")

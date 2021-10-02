@@ -37,7 +37,7 @@ def plot_time():
 		#tplot.set_title("Audio Signal")
 		tplot.grid()
 	
-		canvasfig1=FigureCanvasTkAgg(fig1,master=audioplot)
+		canvasfig1=FigureCanvasTkAgg(fig1,master=imagesl)
 		canvasfig1.draw()
 		canvasfig1.get_tk_widget().place(relx=0,rely=0,relwidth=1,relheight=1)
 
@@ -59,7 +59,7 @@ def plot_ftime(y,fs):
 	#tplot.set_title("Audio Signal")
 	faplot.grid()
 	
-	canvasfig4=FigureCanvasTkAgg(fig4,master=cplot)
+	canvasfig4=FigureCanvasTkAgg(fig4,master=imageil)
 	canvasfig4.draw()
 	canvasfig4.get_tk_widget().place(relx=0,rely=0,relwidth=1,relheight=1)
 
@@ -73,7 +73,7 @@ def plot_filter3(H,Hf):
 	#tplot.set_title("Audio Signal")
 	fplot.grid()
 
-	canvasfig2=FigureCanvasTkAgg(fig2,master=freqplot)
+	canvasfig2=FigureCanvasTkAgg(fig2,master=imagesr)
 	canvasfig2.draw()
 	canvasfig2.get_tk_widget().place(relx=0,rely=0,relwidth=1,relheight=1)
 
@@ -90,7 +90,7 @@ def plot_filter2(W,H,fs):
 	#tplot.set_title("Audio Signal")
 	fplot.grid()
 
-	canvasfig2=FigureCanvasTkAgg(fig2,master=freqplot)
+	canvasfig2=FigureCanvasTkAgg(fig2,master=imagesr)
 	canvasfig2.draw()
 	canvasfig2.get_tk_widget().place(relx=0,rely=0,relwidth=1,relheight=1)
 
@@ -107,7 +107,7 @@ def plot_filter1(W,H,fs):
 	#tplot.set_title("Audio Signal")
 	fplot.grid()
 
-	canvasfig2=FigureCanvasTkAgg(fig2,master=freqplot)
+	canvasfig2=FigureCanvasTkAgg(fig2,master=imagesr)
 	canvasfig2.draw()
 	canvasfig2.get_tk_widget().place(relx=0,rely=0,relwidth=1,relheight=1)
 
@@ -121,7 +121,7 @@ def plot_phase3(H,Hf):
 	#tplot.set_title("Audio Signal")
 	phaseplot.grid()
 
-	canvasfig3=FigureCanvasTkAgg(fig3,master=pplot)
+	canvasfig3=FigureCanvasTkAgg(fig3,master=imageir)
 	canvasfig3.draw()
 	canvasfig3.get_tk_widget().place(relx=0,rely=0,relwidth=1,relheight=1)
 
@@ -138,7 +138,7 @@ def plot_phase2(z,p):
 	#tplot.set_title("Audio Signal")
 	phaseplot.grid()
 
-	canvasfig3=FigureCanvasTkAgg(fig3,master=pplot)
+	canvasfig3=FigureCanvasTkAgg(fig3,master=imageir)
 	canvasfig3.draw()
 	canvasfig3.get_tk_widget().place(relx=0,rely=0,relwidth=1,relheight=1)
 
@@ -155,7 +155,7 @@ def plot_phase(hn):
 	#tplot.set_title("Audio Signal")
 	phaseplot.grid()
 
-	canvasfig3=FigureCanvasTkAgg(fig3,master=pplot)
+	canvasfig3=FigureCanvasTkAgg(fig3,master=imageir)
 	canvasfig3.draw()
 	canvasfig3.get_tk_widget().place(relx=0,rely=0,relwidth=1,relheight=1)
 
@@ -210,21 +210,27 @@ def calculate_filter(fc1,fc2,ripple,bw,ngain,window,band,firtype,iirtype,N,att):
 	else:
 		messagebox.showerror(message="First record something")
 
-def filter_fir(hn,x,fs):
-	y=signal.lfilter(hn,1,x)
-	plot_ftime(y,fs)
-	y=y*32767
-	write("./audios/filtered.wav",fs,y.astype(np.int16))
+def save_filtered(y,fs):    
+	#y must be float32                    
+	print(type(y))                        
+	y*=32767                              
+	y16=np.int16(y)                      
+	write("./audios/filtered.wav",fs,y16)    
 
-def filter_iir(z,p,x,fs):
-	y=signal.lfilter(z,p,x)
-	plot_ftime(y,fs)
-	y=y*32767
-	write("./audios/filtered.wav",fs,y.astype(np.float32))
-
-def filter_ideal(xf,fs):
-	plot_ftime(xf,fs)
-	write("./audios/filtered.wav",fs,xf.astype(np.int16))
+def filter_fir(hn,x,fs):                                                          
+	y=signal.lfilter(hn,1,x)                                                      
+	plot_ftime(y,fs)                                                              
+	save_filtered(y,fs)                                                            
+                                                                                   
+def filter_iir(z,p,x,fs):                                                          
+	y=signal.lfilter(z,p,x)                                                        
+	plot_ftime(y,fs)                                                              
+	save_filtered(y,fs)                                                            
+                                                                                   
+def filter_ideal(xf,fs):                  
+	rxf=np.real(xf)                      
+	plot_ftime(rxf,fs)                    
+	save_filtered(rxf,fs)
 
 def view_fc(event,fc2_label,fc2_input):
 	if (type_cb.get()=="Lowpass" or type_cb.get()=="Highpass"):
@@ -685,21 +691,21 @@ image_frame=tk.LabelFrame(main,text="Graphics of Interest")
 image_frame.place(relx=0.22,rely=0.18,relwidth=0.77,relheight=0.81)
 image_frame.configure(bg='white')
 
-audioplot=tk.LabelFrame(image_frame)
-audioplot.place(relx=0.005,rely=0.005,relwidth=0.49,relheight=0.49)
-audioplot.configure(bg='white')
+imagesl=tk.LabelFrame(image_frame)
+imagesl.place(relx=0.005,rely=0.005,relwidth=0.49,relheight=0.49)
+imagesl.configure(bg='white')
 
-freqplot=tk.LabelFrame(image_frame)
-freqplot.place(relx=0.505,rely=0.005,relwidth=0.49,relheight=0.49)
-freqplot.configure(bg='white')
+imagesr=tk.LabelFrame(image_frame)
+imagesr.place(relx=0.505,rely=0.005,relwidth=0.49,relheight=0.49)
+imagesr.configure(bg='white')
 
-pplot=tk.LabelFrame(image_frame)
-pplot.place(relx=0.005,rely=0.505,relwidth=0.49,relheight=0.49)
-pplot.configure(bg='white')
+imageil=tk.LabelFrame(image_frame)
+imageil.place(relx=0.005,rely=0.505,relwidth=0.49,relheight=0.49)
+imageil.configure(bg='white')
 
-cplot=tk.LabelFrame(image_frame)
-cplot.place(relx=0.505,rely=0.505,relwidth=0.49,relheight=0.49)
-cplot.configure(bg='white')
+imageir=tk.LabelFrame(image_frame)
+imageir.place(relx=0.505,rely=0.505,relwidth=0.49,relheight=0.49)
+imageir.configure(bg='white')
 
 #Frame calculate and save filter
 results_frame=tk.LabelFrame(main,text="Calculate Filter")

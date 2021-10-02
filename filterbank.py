@@ -6,6 +6,7 @@ import threading
 import wave
 import pygame
 import math
+import pyaudio
 import numpy as np
 import scipy.signal as signal
 import matplotlib.pyplot as plt
@@ -213,16 +214,18 @@ def calculate_filter(fc1,fc2,ripple,bw,ngain,window,band,firtype,iirtype,N,att):
 def filter_fir(hn,x,fs):
 	y=signal.lfilter(hn,1,x)
 	plot_ftime(y,fs)
-	write("./audios/filtered.wav",fs,y.astype(np.float32))
+	y=y*32767
+	write("./audios/filtered.wav",fs,y.astype(np.int16))
 
 def filter_iir(z,p,x,fs):
 	y=signal.lfilter(z,p,x)
 	plot_ftime(y,fs)
+	y=y*32767
 	write("./audios/filtered.wav",fs,y.astype(np.float32))
 
 def filter_ideal(xf,fs):
 	plot_ftime(xf,fs)
-	write("./audios/filtered.wav",fs,xf.astype(np.float32))
+	write("./audios/filtered.wav",fs,xf.astype(np.int16))
 
 def view_fc(event,fc2_label,fc2_input):
 	if (type_cb.get()=="Lowpass" or type_cb.get()=="Highpass"):
@@ -436,15 +439,15 @@ def record_audio():
                     file.write(q.get())
 
 def start_filtered():
-	#pygame.mixer.music.load("./audios/filtered.wav")
-	#pygame.mixer.music.play(loops=0)
-	playsound("./audios/filtered.wav")
+	pygame.mixer.music.load("./audios/filtered.wav")
+	pygame.mixer.music.play(loops=0)
+	
 
 def stop_filtered():
 	pygame.mixer.music.stop()
 
-def export_data(fc1,fc2,ripple,bw,ngain,window,band,firtype,iirtype,N,att,method):
 
+def export_data(fc1,fc2,ripple,bw,ngain,window,band,firtype,iirtype,N,att,method):
 
 	if filtered_exists:
 		dat=f'Method: {method}\nBand: {band}\nFIR filter: {firtype}\nIIR filter: {iirtype}\nFrequency cut 1: {fc1}\nFrequency cut 2: {fc2}\n Window: {window}\nFilter Order: {N}\nRipple: {ripple}\nTransition band width: {bw}\nGain [dB]: {ngain}\nAttenuation: [dB] {att}'
@@ -463,6 +466,13 @@ recording = False
 file_exists = False
 
 pygame.mixer.init()
+
+#pyaudio
+paused=True
+playing=False
+after_id=None
+file=r"./audios/filtered.wav"
+
 
 fmethods=('FIR','IIR','Ideal')
 ftypes=('Bandpass','Bandstop','Highpass','Lowpass')
@@ -538,10 +548,10 @@ filtered_frame.place(relx=0.74,rely=0.01,relwidth=0.25,relheight=0.16)
 filtered_frame.configure(bg="white")
 
 playf_btn=tk.Button(filtered_frame,text="Play Filtered",bg="black",fg="white",command=start_filtered)
-playf_btn.place(relx=0.3,rely=0.2,relwidth=0.4,relheight=0.4)
+playf_btn.place(relx=0.05,rely=0.2,relwidth=0.4,relheight=0.4)
 
-#pausef_btn=tk.Button(filtered_frame,text="Stop Playing",bg="black",fg="white",command=stop_filtered)
-#pausef_btn.place(relx=0.55,rely=0.2,relwidth=0.4,relheight=0.4)
+pausef_btn=tk.Button(filtered_frame,text="Stop Playing",bg="black",fg="white",command=stop_filtered)
+pausef_btn.place(relx=0.55,rely=0.2,relwidth=0.4,relheight=0.4)
 
 #filter form
 form=tk.LabelFrame(main,text="Input Design Parameters")

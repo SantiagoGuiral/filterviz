@@ -210,11 +210,15 @@ def calculate_filter(fc1,fc2,ripple,bw,ngain,window,band,firtype,iirtype,N,att):
 
 def save_filtered(y,fs):
     #y must be float32
-    aux_audio=y/np.finfo(np.float32).max
-    aux_audio=aux_audio*np.iinfo(np.int16).max.astype(np.float32)
-    aux_audio16=aux_audio.astype(np.int16)
+    print(type(y))
+    y*=32767
+    y16=np.int16(y)
+    write("./audios/filtered.wav",fs,y16)
+    #aux_audio16=y*np.float32(np.iinfo(np.int16).max)
+    #aux_audio16=aux_audio.astype(np.int16)
     #print("Warning: filtered audio is not float32")
-    write("./audios/filtered.wav",fs,aux_audio16)
+    #print(aux_audio16.dtype)
+    #write("./audios/filtered.wav",fs,aux_audio16.astype(np.int16))
 
 def filter_fir(hn,x,fs):
     y=signal.lfilter(hn,1,x)

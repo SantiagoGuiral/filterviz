@@ -209,13 +209,11 @@ def calculate_filter(fc1,fc2,ripple,bw,ngain,window,band,firtype,iirtype,N,att):
 		messagebox.showerror(message="First record something")
 
 def save_filtered(y,fs):
-    #y must be float32 or int16 (pcm)
-    if y.dtype==np.float32:
-        aux_audio=y/np.finfo(np.float32).max
-        aux_audio=aux_audio*np.iinfo(np.int16).max.astype(np.float32)
-        aux_audio16=aux_audio.astype(np.int16)
-    else:
-        print("Warning: filtered audio is not float32")
+   #y must be float32
+    aux_audio=y/np.finfo(np.float32).max
+    aux_audio=aux_audio*np.iinfo(np.int16).max.astype(np.float32)
+    aux_audio16=aux_audio.astype(np.int16)
+    #print("Warning: filtered audio is not float32")
     write("./audios/filtered.wav",fs,aux_audio16)
 
 def filter_fir(hn,x,fs):

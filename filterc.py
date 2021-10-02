@@ -2,6 +2,12 @@ import numpy as np
 
 def clip(x_in,fs,ftype,fc1,fc2=1):
 
+	fc1=float(fc1)
+	if(ftype=="Lowpass" or ftype=="Highpass"):
+		fc2=1
+	else:
+		fc2=float(fc2)
+
 	#design of the filter
 	fbins=2**int(np.ceil(np.log2(len(x_in)))) #M
 	u=fbins/fs

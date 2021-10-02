@@ -4,8 +4,17 @@ import math
 
 def fir_windowing(fs,ftype,window,BW,ripple,fc1,fc2=1,Adb=0):
 
+	fc1=float(fc1)
+	if(ftype=="Lowpass" or ftype=="Highpass"):
+		fc2=1
+	else:
+		fc2=float(fc2)
+	BW=float(BW)
+	ripple=float(ripple)
 	if (Adb==""):
 		Adb=0
+	else:
+		Adb=float(Adb)
 
 	#Normalize the frequencies
 	wc1=(2*np.pi*fc1)/fs
@@ -79,7 +88,14 @@ def fir_windowing(fs,ftype,window,BW,ripple,fc1,fc2=1,Adb=0):
 	return hn
 
 def freq_sampling(fs,ftype,N,fc1,fc2=1):
-	#Limit for the IFT
+	fc1=float(fc1)
+	if(ftype=="Lowpass" or ftype=="Highpass"):
+		fc2=1
+	else:
+		fc2=float(fc2)
+	N=float(N)
+	
+	#Limit for the IFT	
 	if (N%2!=0):
 		limit=(N-1)/2
 	else:
@@ -140,6 +156,14 @@ def freq_sampling(fs,ftype,N,fc1,fc2=1):
 	return h
 
 def remezf(fs,N,bw,ftype,fc1,fc2=1):
+	
+	fc1=float(fc1)
+	if(ftype=="Lowpass" or ftype=="Highpass"):
+		fc2=1
+	else:
+		fc2=float(fc2)
+	N=float(N)
+	bw=float(bw)
 
 	if (ftype=="Lowpass"):
 		bands=[0,fc1,fc1+BW,fs/2]

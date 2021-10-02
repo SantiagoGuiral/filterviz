@@ -71,7 +71,7 @@ def plot_filter3(H,Hf):
 	#tplot.set_title("Audio Signal")
 	fplot.grid()
 
-	canvasfig2=FigureCanvasTkAgg(fig3,master=freqplot)
+	canvasfig2=FigureCanvasTkAgg(fig2,master=freqplot)
 	canvasfig2.draw()
 	canvasfig2.get_tk_widget().place(relx=0,rely=0,relwidth=1,relheight=1)
 
@@ -123,7 +123,6 @@ def plot_phase3(H,Hf):
 	canvasfig3.draw()
 	canvasfig3.get_tk_widget().place(relx=0,rely=0,relwidth=1,relheight=1)
 
-
 def plot_phase2(z,p):
 
 	w,h=signal.freqz(z,p,1024)
@@ -171,76 +170,57 @@ def calculate_filter(fc1,fc2,ripple,bw,ngain,window,band,firtype,iirtype,N,att):
 
 		if (method_cb.get()=="FIR"):
 			if (firtype=="Windowing"):
-				if (band=="" or window=="" or bw=="" or ripple=="" or fc1==""):
-					error_message()
-				else:
-					hn=ffir.fir_windowing(fs,band,window,bw,ripple,fc1,fc2,ngain)
-					w_win,h_win=signal.freqz(hn,1,whole=True,worN=1024)
-					plot_filter1(w_win,h_win,fs)
-					plot_phase(hn)
-					filter_fir(hn,x,fs)
+				hwindow=ffir.fir_windowing(fs,band,window,bw,ripple,fc1,fc2,ngain)
+				w_win,h_win=signal.freqz(hwindow,1,whole=True,worN=1024)
+				plot_filter1(w_win,h_win,fs)
+				plot_phase(hwindow)
+				filter_fir(hwindow,x,fs)
 			elif(firtype=="Freq. Sampling"):
-				if(band=="" or N=="" or fc1==""):
-					error_message()
-				else:
-					hn=ffir.freq_sampling(fs,band,N,fc1,fc2)
-					W,H=signal.freqz(hn,1,whole=True,worN=1024)
-					plot_filter1(W,H,fs)
-					plot_phase(hn)
-					filter_fir(hn,x,fs)
+				hfs=ffir.freq_sampling(fs,band,ngain,fc1,fc2)
+				W,H=signal.freqz(hfs,1,whole=True,worN=1024)
+				plot_filter1(W,H,fs)
+				plot_phase(hfs)
+				filter_fir(hfs,x,fs)
 			elif(firtype=="Remez"):		
-				if (N=="" or bw =="" or band=="" or fc1==""):
-					error_message()
-				else:
-					hn=ffir_remezf(fs,N,bw,band,fc1,fc2)
-					W,H=signal.freqz(hn,1,1024)
-					plot_filter1(W,H,fs)
-					plot_phase(hn)
-					filter_fir(hn,x,fs)
+				hr=ffir.remezf(fs,ngain,bw,band,fc1,fc2)
+				W,H=signal.freqz(hr,1,1024)
+				plot_filter1(W,H,fs)
+				plot_phase(hr)
+				filter_fir(hr,x,fs)
 			else:
 				messagebox.showerror(message="First select the FIR type")
 
 		elif (method_cb.get()=="IIR"):
-			if (N=="" or band=="" or iirtype=="" or fc1==""):
-				error_message()
-			else:
-				z,p=fiir.analog_irr(fs,N,band,iirtype,fc1,fc2,att,ripple)
-				W,H=signal.freqz(z,p,1024)
-				plot_filter2(W,H,fs)
-				plot_phase2(z,p)
-				filter_iir(z,p,x,fs)
+			z,p=fiir.analog_irr(fs,N,band,iirtype,fc1,fc2,att,ripple)
+			W,H=signal.freqz(z,p,1024)
+			plot_filter2(W,H,fs)
+			plot_phase2(z,p)
+			filter_iir(z,p,x,fs)
 
 		elif (method_cb.get()=="Ideal"):
-			if(band=="" or fc1==""):
-				error_message()
-			else:
-				xf,H,Hf=fideal.clip(x,fs,band,fc1,fc2)
-				plot_filter3(H,Hf)
-				plot_phase3(H,Hf)
-				filter_ideal(xf,fs)
+			xf,H,Hf=fideal.clip(x,fs,band,fc1,fc2)
+			plot_filter3(H,Hf)
+			plot_phase3(H,Hf)
+			filter_ideal(xf,fs)
 		else:
 			messagebox.showerror(message="First select the method")
 
 	else:
-    	#Display and error if none is found
 		messagebox.showerror(message="First record something")
 
 def filter_fir(hn,x,fs):
 	y=signal.lfilter(hn,1,x)
 	plot_ftime(y,fs)
 	write("./audios/filtered.wav",fs,y.astype(np.float32))
-	print(f'we are here')
 
 def filter_iir(z,p,x,fs):
 	y=signal.lfilter(z,p,x)
 	plot_ftime(y,fs)
-	write("./audios/filtered.wav",fs,y.astype(np.float32))
-	filtered_exists=True
+	write("./audios/filtered.wav",fs,y)
 
 def filter_ideal(xf,fs):
 	plot_ftime(xf,fs)
-	write("./audios/filtered.wav",fs,xf.astype(np.float32))
-	filtered_exists=True
+	write("./audios/filtered.wav",fs,xf)
 
 def view_fc(event,fc2_label,fc2_input):
 	if (type_cb.get()=="Lowpass" or type_cb.get()=="Highpass"):
@@ -439,9 +419,9 @@ def record_audio():
     #Create a file to save the audio
     messagebox.showinfo(message="Recording Audio")
     with sf.SoundFile("./audios/recording.wav", mode='w', samplerate=44100,
-                        channels=2) as file:
+                        channels=1) as file:
     #Create an input stream to record audio without a preset time
-            with sd.InputStream(samplerate=44100, channels=2, callback=callback):
+            with sd.InputStream(samplerate=44100, channels=1, callback=callback):
                 while recording == True:
                     #Set the variable to True to allow playing the audio later
                     file_exists =True

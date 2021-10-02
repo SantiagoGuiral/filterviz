@@ -4,17 +4,17 @@ import math
 
 def fir_windowing(fs,ftype,window,BW,ripple,fc1,fc2=1,Adb=0):
 
-	fc1=float(fc1)
+	fc1=int(fc1)
 	if(ftype=="Lowpass" or ftype=="Highpass"):
 		fc2=1
 	else:
-		fc2=float(fc2)
-	BW=float(BW)
-	ripple=float(ripple)
+		fc2=int(fc2)
+	BW=int(BW)
+	ripple=int(ripple)
 	if (Adb==""):
 		Adb=0
 	else:
-		Adb=float(Adb)
+		Adb=int(Adb)
 
 	#Normalize the frequencies
 	wc1=(2*np.pi*fc1)/fs
@@ -88,12 +88,12 @@ def fir_windowing(fs,ftype,window,BW,ripple,fc1,fc2=1,Adb=0):
 	return hn
 
 def freq_sampling(fs,ftype,N,fc1,fc2=1):
-	fc1=float(fc1)
+	fc1=int(fc1)
 	if(ftype=="Lowpass" or ftype=="Highpass"):
 		fc2=1
 	else:
-		fc2=float(fc2)
-	N=float(N)
+		fc2=int(fc2)
+	N=int(N)
 	
 	#Limit for the IFT	
 	if (N%2!=0):
@@ -123,13 +123,13 @@ def freq_sampling(fs,ftype,N,fc1,fc2=1):
 				hk.append(1)
 	elif(ftype=="Bandpass"):
 		for i in samples:
-			if (fk*i<=fc1 & fk*i>=fc2):
+			if (fk*i<=fc1 and fk*i>=fc2):
 				hk.append(0)
 			else:
 				hk.append(1)       
 	elif(ftype=="Bandstop"):
 		for i in samples:
-			if (fk*i>=fc1 & fk*i<=fc2):
+			if (fk*i>=fc1 and fk*i<=fc2):
 				hk.append(0)
 			else:
 				hk.append(1)
@@ -157,13 +157,13 @@ def freq_sampling(fs,ftype,N,fc1,fc2=1):
 
 def remezf(fs,N,bw,ftype,fc1,fc2=1):
 	
-	fc1=float(fc1)
+	fc1=int(fc1)
 	if(ftype=="Lowpass" or ftype=="Highpass"):
 		fc2=1
 	else:
-		fc2=float(fc2)
-	N=float(N)
-	bw=float(bw)
+		fc2=int(fc2)
+	N=int(N)
+	BW=int(bw)
 
 	if (ftype=="Lowpass"):
 		bands=[0,fc1,fc1+BW,fs/2]

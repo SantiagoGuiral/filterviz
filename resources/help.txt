@@ -1,0 +1,31 @@
+Ayuda de Filterviz/Filterbank.
+
+Características.
+-grabación de audio
+-reproducción de audio
+-posibilidad de importar señal de audio
+-visualización de la señal de audio en el
+  -tiempo (muestras): amplitud
+  -frecuencia (bins): magnitud y fase
+-visualización del espectro
+  -del filtro
+  -de la señal filtrada
+-posibilidad de reproducir la señal filtrada
+-posibilidad de exportar la señal filtrada
+-filtros:
+  -FIR (Finite Impulse Response)
+	-pasa bajas (lowpass/lp)
+	-pasa altas (highpass/hp)
+	-pasa banda (bandpass/bp)
+	-rechaza banda (bandstop/bs)
+  -IIR (Infinite Impulse Response)
+	-lp/hp/bp/bs
+	  -Chebyshev 1 & 2
+	  -Elíptico
+	  -Bessel
+	  -Butterworth
+  -ideal (filtro ideal en frecuencia)
+
+¿Cómo utilizar el programa?
+
+

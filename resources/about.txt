@@ -1,0 +1,5 @@
+Filterviz-Filterbank
+Banco de filtros para aplicarlos a señales de audio
+Autores:
+Santiago Ríos Guiral(gh@SantiagoGuiral/gl@sguiral)
+Emmanuel Gomez Ospina(@ego2509)

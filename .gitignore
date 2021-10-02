@@ -1,2 +1,5 @@
 .ipynb_checkpoints/
 *.swp
+ignore/
+__pycache__/
+audios/*

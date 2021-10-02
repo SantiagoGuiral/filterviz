@@ -2,4 +2,5 @@
 *.swp
 ignore/
 __pycache__/
-audios/
+audios/recording.wav
+audios/filtered.wav

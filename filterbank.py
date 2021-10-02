@@ -6,7 +6,6 @@ import threading
 import wave
 import pygame
 import math
-import pyaudio
 import numpy as np
 import scipy.signal as signal
 import matplotlib.pyplot as plt
@@ -427,7 +426,7 @@ def record_audio():
     recording= True   
     global file_exists 
     #Create a file to save the audio
-    messagebox.showinfo(message="Recording Audio")
+    messagebox.showinfo(message="Click OK to record audio")
     with sf.SoundFile("./audios/recording.wav", mode='w', samplerate=44100,
                         channels=1) as file:
     #Create an input stream to record audio without a preset time

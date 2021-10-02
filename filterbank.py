@@ -210,7 +210,7 @@ def calculate_filter(fc1,fc2,ripple,bw,ngain,window,band,firtype,iirtype,N,att):
 
 def save_filtered(y,fs):
     #y must be float32 or int16 (pcm)
-    if np.dtype(y)==np.float32:
+    if y.dtype==np.float32:
         aux_audio=y/np.finfo(np.float32).max
         aux_audio=aux_audio*np.iinfo(np.int16).max.astype(np.float32)
         aux_audio16=aux_audio.astype(np.int16)

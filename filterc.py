@@ -32,6 +32,7 @@ def clip(x_in,fs,ftype,fc1,fc2=1):
 	Y=H*X
     #time/sampling-domain signal
 	y=np.fft.ifft(Y,fbins)[:len(x_in)]
+	Hf=fourier.fftfreq(fbins,fs/fbins)
 
-	return y, H, X
+	return y,H,Hf
 

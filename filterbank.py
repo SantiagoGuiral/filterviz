@@ -14,6 +14,7 @@ import filteriir as fiir
 from scipy.io.wavfile import read, write
 from tkinter import ttk
 from tkinter import messagebox
+from tkinter.filedialog import asksaveasfile
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
 
@@ -34,9 +35,9 @@ def plot_time():
 		#tplot.set_title("Audio Signal")
 		tplot.grid()
 	
-		canvas=FigureCanvasTkAgg(fig,master=audioplot)
-		canvas.draw()
-		canvas.get_tk_widget().place(relx=0,rely=0,relwidth=1,relheight=1)
+		canvasfig1=FigureCanvasTkAgg(fig,master=audioplot)
+		canvasfig1.draw()
+		canvasfig1.get_tk_widget().place(relx=0,rely=0,relwidth=1,relheight=1)
 
 	else:
     	#Display and error if none is found
@@ -44,23 +45,33 @@ def plot_time():
 		txt.set("Off: Not Recording")
 		record_label.config(fg="red")
 
-def plot_filter3(H,fs):
+def plot_ftime(y,fs):
 
-	M=len(H)
-	new_fs=fs/M
-	freq=np.arange(0,(M-1)*new_fs,new_fs)
+	fig4=Figure(figsize=(4,3),dpi=100)
+	faplot=fig.add_subplot(111)
+	faplot.plot(t,x,linewidth=2,color="b")
+	faplot.set_xlabel("Time [S]")
+	faplot.set_ylabel("Amplitude [a.u]")
+	#tplot.set_title("Audio Signal")
+	faplot.grid()
+	
+	canvasfig4=FigureCanvasTkAgg(fig4,master=cplot)
+	canvasfig4.draw()
+	canvasfig4.get_tk_widget().place(relx=0,rely=0,relwidth=1,relheight=1)
 
-	fig2=Figure(figsize=(4,3),dpi=100)
+def plot_filter3(H,Hf):
+
+	fig3=Figure(figsize=(4,3),dpi=100)
 	fplot=fig.add_subplot(111)
-	fplot.plot(freq,H,linewidth=2,color="b")
-	fplot.set_xlabel("F [Hz]")
+	fplot.plot(Hf,np.real(H),linewidth=2,color="b")
+	fplot.set_xlabel("f [Hz]")
 	fplot.set_ylabel("Magnitude")
 	#tplot.set_title("Audio Signal")
 	fplot.grid()
 
-	canvas2=FigureCanvasTkAgg(fig2,master=freqplot)
-	canvas2.draw()
-	canvas2.get_tk_widget().place(relx=0,rely=0,relwidth=1,relheight=1)
+	canvasfig2=FigureCanvasTkAgg(fig3,master=freqplot)
+	canvasfig2.draw()
+	canvasfig2.get_tk_widget().place(relx=0,rely=0,relwidth=1,relheight=1)
 
 
 def plot_filter2(W,H):
@@ -71,31 +82,46 @@ def plot_filter2(W,H):
 	fig2=Figure(figsize=(4,3),dpi=100)
 	fplot=fig.add_subplot(111)
 	fplot.plot(Freq,Mag,linewidth=2,color="b")
-	fplot.set_xlabel("F [Hz]")
+	fplot.set_xlabel("f [Hz]")
 	fplot.set_ylabel("Magnitude [dB]")
 	#tplot.set_title("Audio Signal")
 	fplot.grid()
 
-	canvas2=FigureCanvasTkAgg(fig2,master=freqplot)
-	canvas2.draw()
-	canvas2.get_tk_widget().place(relx=0,rely=0,relwidth=1,relheight=1)
+	canvasfig2=FigureCanvasTkAgg(fig2,master=freqplot)
+	canvasfig2.draw()
+	canvasfig2.get_tk_widget().place(relx=0,rely=0,relwidth=1,relheight=1)
 
 def plot_filter1(W,H,fs):
 	
 	w=(W-np.pi)*fs/(2*np.pi)
-	h=np.abs(np.fft.fftshift(H)
+	h=np.abs(np.fft.fftshift(H))
 
 	fig2=Figure(figsize=(4,3),dpi=100)
 	fplot=fig.add_subplot(111)
 	fplot.plot(WW,HH,linewidth=2,color="b")
-	fplot.set_xlabel("F [Hz]")
+	fplot.set_xlabel("f [Hz]")
 	fplot.set_ylabel("Magnitude")
 	#tplot.set_title("Audio Signal")
 	fplot.grid()
 
-	canvas2=FigureCanvasTkAgg(fig2,master=freqplot)
-	canvas2.draw()
-	canvas2.get_tk_widget().place(relx=0,rely=0,relwidth=1,relheight=1)
+	canvasfig2=FigureCanvasTkAgg(fig2,master=freqplot)
+	canvasfig2.draw()
+	canvasfig2.get_tk_widget().place(relx=0,rely=0,relwidth=1,relheight=1)
+
+def plot_phase3(H,Hf):
+
+	fig3=Figure(figsize=(4,3),dpi=100)
+	pplot=fig.add_subplot(111)
+	pplot.plot(Hf,np.angle(H),linewidth=2,color="b")
+	pplot.set_xlabel("F [Hz]")
+	pplot.set_ylabel("Angle [Rad]")
+	#tplot.set_title("Audio Signal")
+	fplot.grid()
+
+	canvasfig3=FigureCanvasTkAgg(fig3,master=pplot)
+	canvasfig3.draw()
+	canvasfig3.get_tk_widget().place(relx=0,rely=0,relwidth=1,relheight=1)
+
 
 def plot_phase2(z,p):
 
@@ -110,9 +136,9 @@ def plot_phase2(z,p):
 	#tplot.set_title("Audio Signal")
 	fplot.grid()
 
-	canvas3=FigureCanvasTkAgg(fig3,master=pplot)
-	canvas3.draw()
-	canvas3.get_tk_widget().place(relx=0,rely=0,relwidth=1,relheight=1)
+	canvasfig3=FigureCanvasTkAgg(fig3,master=pplot)
+	canvasfig3.draw()
+	canvasfig3.get_tk_widget().place(relx=0,rely=0,relwidth=1,relheight=1)
 
 def plot_phase(hn):
 
@@ -127,9 +153,9 @@ def plot_phase(hn):
 	#tplot.set_title("Audio Signal")
 	fplot.grid()
 
-	canvas3=FigureCanvasTkAgg(fig3,master=pplot)
-	canvas3.draw()
-	canvas3.get_tk_widget().place(relx=0,rely=0,relwidth=1,relheight=1)
+	canvasfig3=FigureCanvasTkAgg(fig3,master=pplot)
+	canvasfig3.draw()
+	canvasfig3.get_tk_widget().place(relx=0,rely=0,relwidth=1,relheight=1)
 
 def error_message():
 	messagebox.showerror(message="Please enter all the required parameters")
@@ -185,8 +211,9 @@ def calculate_filter(fc1,fc2,ripple,bw,ngain,window,band,firtype,iirtype,N,att):
 			if(band=="" or fc1==""):
 				error_message()
 			else:
-				xf,H,ftx=fideal.clip(x,fs,band,fc1,fc2)
-				plot_filter3(H,fs)
+				xf,H,Hf=fideal.clip(x,fs,band,fc1,fc2)
+				plot_filter3(H,Hf)
+				plot_phase3(H,Hf)
 				filter_ideal(xf,fs)
 
 	else:
@@ -197,15 +224,18 @@ def calculate_filter(fc1,fc2,ripple,bw,ngain,window,band,firtype,iirtype,N,att):
 
 def filter_fir(hn,x,fs):
 	y=signal.lfilter(hn,1,x)
+	plot_ftime(y,fs)
 	write("./audios/filtered.wav",fs,y.astype(np.int16))
 	filtered_file=True
 
 def filter_iir(z,p,x,fs):
 	y=signal.lfilter(z,p,x)
+	plot_ftime(y,fs)
 	write("./audios/filtered.wav",fs,y.astype(np.int16))
 	filtered_file=True
 
 def filter_ideal(xf,fs):
+	plot_ftime(xf,fs)
 	write("./audios/filtered.wav",fs,xf.astype(np.int16))
 	filtered_file=True
 
@@ -357,6 +387,7 @@ def help_about():
 	y = (hs/2) - (h/2)
 	filewin.geometry('%dx%d+%d+%d' % (w, h, x, y))
 
+"""
 def clean_interface():
 	filewin = tk.Toplevel(window)
 	filewin.title("Clean")
@@ -367,6 +398,7 @@ def clean_interface():
 	x = (ws/2) - (w/2)
 	y = (hs/2) - (h/2)
 	filewin.geometry('%dx%d+%d+%d' % (w, h, x, y))
+"""
 
 #Fit data into queue
 def callback(indata, frames, time, status):
@@ -440,6 +472,15 @@ def start_filtered():
 def stop_filtered():
 	pygame.mixer.music.stop()
 
+
+def export_data(fc1,fc2,ripple,bw,ngain,window,band,firtype,iirtype,N,att,method):
+
+	data=f'Method: {method}\nBand: {band}\nFIR filter: {firtype}\nIIR filter: {iirtype}\nFrequency cut 1: {fc1}\nFrequency cut 2: {fc2}\n Window: {window}\nFilter Order: {N}\nRipple: {ripple}\nTransition band width: {bw}\nGain [dB]: {ngain}\nAttenuation: [dB] {att}'
+
+	files = [('All Files', '*.*'),('Dat Files', '*.dat'),('Text Document', '*.txt')]
+	f = asksaveasfile(filetypes = files, defaultextension = files)
+	f.write(data)
+
 #GUI Variables
 #Create a queue to contain the audio data
 q = queue.Queue()
@@ -472,7 +513,7 @@ window.title("DSP Filter's Bank")
 menubar = tk.Menu(window)
 
 interfacemenu=tk.Menu(menubar,tearoff=0)
-interfacemenu.add_command(label="Clean Layout",command=clean_interface)
+#interfacemenu.add_command(label="Clean Layout",command=clean_interface)
 interfacemenu.add_command(label="Exit",command=window.quit)
 menubar.add_cascade(label="File",menu=interfacemenu)
 
@@ -678,7 +719,7 @@ cplot=tk.LabelFrame(image_frame)
 cplot.place(relx=0.505,rely=0.505,relwidth=0.49,relheight=0.49)
 cplot.configure(bg='white')
 
-#Frame calculata and save filter
+#Frame calculate and save filter
 results_frame=tk.LabelFrame(main,text="Calculate Filter")
 results_frame.place(relx=0.01,rely=0.72,relwidth=0.20,relheight=0.27)
 results_frame.configure(bg='white')
@@ -686,7 +727,7 @@ results_frame.configure(bg='white')
 btn_calculate=tk.Button(results_frame,text="Calculate",fg="white",bg="black",command=lambda:calculate_filter(fc1_input.get(),fc2_input.get(),ripple_input.get(),bw_input.get(),Ngain_input.get(),window_cb.get(),type_cb.get(),fir_cb.get(),iir_cb.get(),N_input.get(),att_input.get()))
 btn_calculate.place(relx=0.2,rely=0.2,relwidth=0.6,relheight=0.2)
 
-btn_save=tk.Button(results_frame,text="Export",fg="white",bg="black")
+btn_save=tk.Button(results_frame,text="Export",fg="white",bg="black",command=lambda:export_data(fc1_input.get(),fc2_input.get(),ripple_input.get(),bw_input.get(),Ngain_input.get(),window_cb.get(),type_cb.get(),fir_cb.get(),iir_cb.get(),N_input.get(),att_input.get(),method_cb.get()))
 btn_save.place(relx=0.2,rely=0.6,relwidth=0.6,relheight=0.21)
 
 window.mainloop()

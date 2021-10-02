@@ -2,4 +2,4 @@
 *.swp
 ignore/
 __pycache__/
-audios/*
+audios/

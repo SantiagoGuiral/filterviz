@@ -365,27 +365,32 @@ def view_fir(event,window_label,window_cb,ripple_label,ripple_input,bw_label,bw_
 		bw_input.grid(row=16)
 		txt.set("Gain [dB]")
 
+#def help_geometry(filewin):
+#w=600
+#    h=400
+#    ws = filewin.winfo_screenwidth()
+#    hs = filewin.winfo_screenheight()
+#    x = (ws/2) - (w/2)
+#    y = (hs/2) - (h/2)
+#    filewin.geometry('%dx%d+%d+%d' % (w, h, x, y))
+
 def help_view():
-	filewin = tk.Toplevel(window)
-	filewin.title("Help")
-	w=600
-	h=400
-	ws = filewin.winfo_screenwidth()
-	hs = filewin.winfo_screenheight()
-	x = (ws/2) - (w/2)
-	y = (hs/2) - (h/2)
-	filewin.geometry('%dx%d+%d+%d' % (w, h, x, y))
+    filewin = tk.Toplevel()
+    filewin.title("Help")
+    with open("./resources/help.txt",'r') as f:
+        about_text=f.read()
+        l=tk.Label(filewin,text=about_text,justify="left").pack(padx=8,pady=8,fill='both',expand=True)
+
 
 def help_about():
-	filewin = tk.Toplevel(window)
-	filewin.title("Help")
-	w=600
-	h=400
-	ws = filewin.winfo_screenwidth()
-	hs = filewin.winfo_screenheight()
-	x = (ws/2) - (w/2)
-	y = (hs/2) - (h/2)
-	filewin.geometry('%dx%d+%d+%d' % (w, h, x, y))
+    filewin = tk.Toplevel()
+    filewin.title("About")
+    #help_geometry(filewin)
+    #hframe=tk.Frame(filewin).pack(fill="both",expand=True)
+    with open("./resources/about.txt",'r') as f:
+        about_text=f.read()
+ #        l=tk.Label(hframe,text=about_text,justify="center").pack(fill='both',expand=True)
+        l=tk.Label(filewin,text=about_text,justify="center").pack(padx=8,pady=8,fill='both',expand=True)
 
 """
 def clean_interface():

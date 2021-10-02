@@ -80,6 +80,8 @@ def fir_windowing(fs,ftype,window,BW,ripple,fc1,fc2=1,Adb=0):
 		win=signal.blackman(len(hx))
 	elif (window=="Bartlett"):
 		win=signal.triang(len(hx))
+	else:
+		win=np.ones(len(hx))
 
 	#Filter response
 	hn=hx*win
@@ -130,9 +132,9 @@ def freq_sampling(fs,ftype,N,fc1,fc2=1):
 	elif(ftype=="Bandstop"):
 		for i in samples:
 			if (fk*i>=fc1 and fk*i<=fc2):
-				hk.append(0)
-			else:
 				hk.append(1)
+			else:
+				hk.append(0)
 
 	#Calculates the IFT
 	alfa=(N-1)/2

@@ -212,7 +212,6 @@ def calculate_filter(fc1,fc2,ripple,bw,ngain,window,band,firtype,iirtype,N,att):
 
 def save_filtered(y,fs):    
 	#y must be float32                    
-	print(type(y))                        
 	y*=32767                              
 	y16=np.int16(y)                      
 	write("./audios/filtered.wav",fs,y16)    
@@ -481,7 +480,7 @@ file=r"./audios/filtered.wav"
 
 fmethods=('FIR','IIR','Ideal')
 ftypes=('Bandpass','Bandstop','Highpass','Lowpass')
-windows=('Default','Bartlett','Blackmann','Hamming','Hann','Square')
+windows=('Default','Bartlett','Blackman','Hamming','Hann','Square')
 firmethods=('Windowing','Freq. Sampling','Remez')
 iirmethods=('Bessel','Butterworth','Chebyshev I','Chebyshev II','Elliptic')
 

@@ -4,22 +4,22 @@ import math
 
 def analog_irr(fs,N,ftype,analog,fc1,fc2=1,att=3,ripple=5):
 
-	fc1=float(fc1)
+	fc1=int(fc1)
 	if(ftype=="Lowpass" or ftype=="Highpass"):
 		fc2=1
 	else:
-		fc2=float(fc2)
-	N=float(N)
+		fc2=int(fc2)
+	N=int(N)
 	
 	if (att==""):
 		att=3
 	else:
-		att=float(att)
+		att=int(att)
 
 	if (ripple==""):
 		ripple=5
 	else:
-		ripple=float(ripple)
+		ripple=int(ripple)
 
 	#Normalize frequencies
 	Td=1/fs

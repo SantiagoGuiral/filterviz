@@ -65,11 +65,18 @@ def plot_ftime(y,fs):
 	canvasfig4.draw()
 	canvasfig4.get_tk_widget().place(relx=0,rely=0,relwidth=1,relheight=1)
 
-def plot_filter3(H,Hf):
+def plot_filter3(H,fs):
 
+	M=len(H)
+	k=np.arange(0,M)
+	fk=k*fs/M
 	fig2=Figure(figsize=(4,3),dpi=100)
+
+	freq=np.arange(0,2*np.pi,(2*np.pi)/M)
+	angle=np.zeros(len(freq))
+
 	fplot=fig2.add_subplot(211)
-	fplot.plot(Hf,np.real(H),linewidth=1,color="b",label="Magnitude")
+	fplot.plot(freq,np.real(H),linewidth=1,color="b",label="Magnitude")
 	fplot.set_xlabel("f [Hz]",labelpad=2)
 	fplot.set_ylabel("Magnitude",labelpad=1)
 	#fplot.set_title("Filter Response")
@@ -78,7 +85,7 @@ def plot_filter3(H,Hf):
 	fplot.grid()
 
 	ffplot=fig2.add_subplot(212)
-	ffplot.plot(Hf,np.angle(H),linewidth=1,color="r",label="Phase")
+	ffplot.plot(freq,angle,linewidth=1,color="r",label="Phase")
 	ffplot.set_xlabel("f [Hz]",labelpad=1)
 	ffplot.set_ylabel("Degree",labelpad=2)
 	#ffplot.set_title("Audio Signal")
@@ -164,10 +171,10 @@ def plot_fft(y,fs,fc1,fc2):
 
 	fig3=Figure(figsize=(4,3),dpi=100)
 	fftplot=fig3.add_subplot(111)
-	fftplot.plot(freq_demod,dft,linewidth=1,color="y")
+	fftplot.semilogx(freq_demod,dft,linewidth=1,color="y")
 	fftplot.set_xlabel("f [Hz]",labelpad=1)
 	fftplot.set_ylabel("Magnitude",labelpad=2)
-	fftplot.set_xlim(0,fclimit)
+	#fftplot.set_xlim(0,fclimit)
 	fftplot.set_title("Fast Fourier Tranform Output")
 	fftplot.grid()
 
@@ -213,7 +220,7 @@ def calculate_filter(fc1,fc2,ripple,bw,ngain,window,band,firtype,iirtype,N,att):
 
 		elif (method_cb.get()=="Ideal"):
 			xf,H,Hf=fideal.clip(x,fs,band,fc1,fc2)
-			plot_filter3(H,Hf)
+			plot_filter3(H,fs)
 			filter_ideal(xf,fs,fc1,fc2)
 		else:
 			messagebox.showerror(message="First select the method")

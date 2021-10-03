@@ -40,16 +40,18 @@ def fir_windowing(fs,ftype,window,BW,ripple,fc1,fc2=1,Adb=0):
 	M=math.ceil(M)
 	if (M%2==0):
 		M+=1
-    
+
 	#Create the samples vector
 	n=np.arange(int(-M/2),int(M/2+1))
 
 	#Determines the Filter type 
 	if (ftype=="Lowpass"):
-		hx=(wc1/np.pi)*(np.sin(wc1*n)/wc1*n)
+		hx=(wc1/np.pi)*np.sinc(wc1*n/np.pi)
+		#hx=(wc1/np.pi)*(np.sin(wc1*n)/wc1*n)
 		hx[int(M/2)]=(wc1/np.pi)
 	elif (ftype=="Highpass"):
-		hx=-(wc1/np.pi)*(np.sin(wc1*n)/wc1*n)
+		hx=-(wc1/np.pi)*np.sinc(wc1*n/np.pi)
+		#hx=-(wc1/np.pi)*(np.sin(wc1*n)/wc1*n)
 		hx[int(M/2)]=1-(wc1/np.pi)
 	elif (ftype=="Bandpass"):
 		hx=((wc2/np.pi)*np.sin(n*wc2))/(n*wc2)-((wc1/np.pi)*np.sin(n*wc1))/(n*wc1)
@@ -57,6 +59,7 @@ def fir_windowing(fs,ftype,window,BW,ripple,fc1,fc2=1,Adb=0):
 	elif (ftype=="Bandstop"):
 		hx=((wc1/np.pi)*np.sin(n*wc1))/(n*wc1)-((wc2/np.pi)*np.sin(n*wc2))/(n*wc2)
 		hx[int(M/2)]=1-((1/np.pi)*(wc2-wc1))
+	
 
 	#Determine the window
 	if (window=="Default"):
@@ -123,13 +126,13 @@ def freq_sampling(fs,ftype,N,fc1,fc2=1):
 				hk.append(0)
 			else:
 				hk.append(1)
-	elif(ftype=="Bandpass"):
+	elif(ftype=="Bandstop"):
 		for i in samples:
-			if (fk*i<=fc1 and fk*i>=fc2):
+			if (fk*i>=fc1 and fk*i<=fc2):
 				hk.append(0)
 			else:
 				hk.append(1)       
-	elif(ftype=="Bandstop"):
+	elif(ftype=="Bandpass"):
 		for i in samples:
 			if (fk*i>=fc1 and fk*i<=fc2):
 				hk.append(1)

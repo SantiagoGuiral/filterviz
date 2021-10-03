@@ -28,11 +28,14 @@ def plot_time():
 		x=x-np.mean(x)
 		t=np.arange(0,float(len(x))/fs,1/fs)
 
+		if (len(x)!=len(t)):
+			x=x[:-1]
+
 		fig1=Figure(figsize=(4,3),dpi=100)
 		tplot=fig1.add_subplot(111)
 		tplot.plot(t,x,linewidth=1,color="g")
 		tplot.set_xlabel("Time [S]",labelpad=1)
-		tplot.set_ylabel("Amplitude [a.u]",labelpad=1)
+		tplot.set_ylabel("Amplitude [a.u]",labelpad=2)
 		tplot.set_title("Audio Signal")
 		tplot.grid()
 	
@@ -54,7 +57,7 @@ def plot_ftime(y,fs):
 	faplot=fig4.add_subplot(111)
 	faplot.plot(t,y,linewidth=1,color="g")
 	faplot.set_xlabel("Time [S]",labelpad=1)
-	faplot.set_ylabel("Amplitude [a.u]",labelpad=1)
+	faplot.set_ylabel("Amplitude [a.u]",labelpad=2)
 	faplot.set_title("Filtered Audio Signal")
 	faplot.grid()
 	
@@ -71,13 +74,13 @@ def plot_filter3(H,Hf):
 	fplot.set_ylabel("Magnitude",labelpad=1)
 	#fplot.set_title("Filter Response")
 	fplot.xaxis.set_label_position('top') 
-	ffplot.legend(loc="best")
+	fplot.legend(loc="best")
 	fplot.grid()
 
 	ffplot=fig2.add_subplot(212)
-	ffplot.plot(Hf,np.angles(H),linewidth=1,color="r",label="Phase")
+	ffplot.plot(Hf,np.angle(H),linewidth=1,color="r",label="Phase")
 	ffplot.set_xlabel("f [Hz]",labelpad=1)
-	ffplot.set_ylabel("Degree",labelpad=1)
+	ffplot.set_ylabel("Degree",labelpad=2)
 	#ffplot.set_title("Audio Signal")
 	ffplot.legend(loc="best")
 	ffplot.grid()
@@ -95,8 +98,8 @@ def plot_filter2(W,H,fs):
 	fig2=Figure(figsize=(4,3),dpi=100)
 	fplot=fig2.add_subplot(211)
 	fplot.plot(Freq,Mag,linewidth=1,color="b",label="Magnitude")
-	fplot.set_xlabel("f [Hz]",labelpad=2)
-	fplot.set_ylabel("Magnitude [dB]",labelpad=1)
+	fplot.set_xlabel("f [Hz]",labelpad=3)
+	fplot.set_ylabel("Magnitude [dB]",labelpad=2)
 	#fplot.set_title("Filter Response")
 	fplot.set_xlim(0,fs/2)
 	fplot.xaxis.set_label_position('top') 
@@ -106,7 +109,7 @@ def plot_filter2(W,H,fs):
 	ffplot=fig2.add_subplot(212)
 	ffplot.plot(W,angles,linewidth=1,color="r",label="Phase")
 	ffplot.set_xlabel("f [Rad]",labelpad=1)
-	ffplot.set_ylabel("Degree",labelpad=1)
+	ffplot.set_ylabel("Degree",labelpad=2)
 	#ffplot.set_title("Audio Signal")
 	ffplot.legend(loc="best")
 	ffplot.grid()
@@ -115,24 +118,34 @@ def plot_filter2(W,H,fs):
 	canvasfig2.draw()
 	canvasfig2.get_tk_widget().place(relx=0,rely=0,relwidth=1,relheight=1)
 
-"""
 def plot_filter1(W,H,fs):
 	
 	w=(W-np.pi)*fs/(2*np.pi)
 	h=np.abs(np.fft.fftshift(H))
+	angles=np.unwrap(np.angle(H))
 
 	fig2=Figure(figsize=(4,3),dpi=100)
-	fplot=fig2.add_subplot(111)
-	fplot.plot(w,h,linewidth=2,color="b")
-	fplot.set_xlabel("f [Hz]")
-	fplot.set_ylabel("Magnitude")
-	#tplot.set_title("Audio Signal")
+	fplot=fig2.add_subplot(211)
+	fplot.plot(w,h,linewidth=1,color="b",label="Magnitude")
+	fplot.set_xlabel("f [Hz]",labelpad=3)
+	fplot.set_ylabel("Magnitude [dB]",labelpad=2)
+	#fplot.set_title("Filter Response")
+	fplot.set_xlim(0,fs/2)
+	fplot.xaxis.set_label_position('top') 
+	fplot.legend(loc="best")
 	fplot.grid()
+
+	ffplot=fig2.add_subplot(212)
+	ffplot.plot(W,angles,linewidth=1,color="r",label="Phase")
+	ffplot.set_xlabel("f [Rad]",labelpad=1)
+	ffplot.set_ylabel("Degree",labelpad=2)
+	#ffplot.set_title("Audio Signal")
+	ffplot.legend(loc="best")
+	ffplot.grid()
 
 	canvasfig2=FigureCanvasTkAgg(fig2,master=imagesr)
 	canvasfig2.draw()
 	canvasfig2.get_tk_widget().place(relx=0,rely=0,relwidth=1,relheight=1)
-"""
 
 def plot_fft(y,fs,fc1,fc2):
 
@@ -153,7 +166,7 @@ def plot_fft(y,fs,fc1,fc2):
 	fftplot=fig3.add_subplot(111)
 	fftplot.plot(freq_demod,dft,linewidth=1,color="y")
 	fftplot.set_xlabel("f [Hz]",labelpad=1)
-	fftplot.set_ylabel("Magnitude",labelpad=1)
+	fftplot.set_ylabel("Magnitude",labelpad=2)
 	fftplot.set_xlim(0,fclimit)
 	fftplot.set_title("Fast Fourier Tranform Output")
 	fftplot.grid()
@@ -177,8 +190,8 @@ def calculate_filter(fc1,fc2,ripple,bw,ngain,window,band,firtype,iirtype,N,att):
 			if (firtype=="Windowing"):
 				hwindow=ffir.fir_windowing(fs,band,window,bw,ripple,fc1,fc2,ngain)
 				w_win,h_win=signal.freqz(hwindow,1,whole=True,worN=1024)
-				plot_filter2(w_win,h_win,fs)
-				filter_fir(hwindow,x,fs,fc1,fc2)
+				plot_filter1(w_win,h_win,fs)
+				filter_fir2(hwindow,x,fs,fc1,fc2)
 			elif(firtype=="Freq. Sampling"):
 				hfs=ffir.freq_sampling(fs,band,ngain,fc1,fc2)
 				W,H=signal.freqz(hfs,1,whole=True,worN=1024)
@@ -214,6 +227,14 @@ def save_filtered(y,fs):
 	y16=np.int16(y)                      
 	write("./audios/filtered.wav",fs,y16)    
 
+def filter_fir2(hn,x,fs,fc1,fc2):                                            
+	y=signal.lfilter(hn,1,x)       
+	y=y/float(np.max(np.abs(y)))
+	y=y-np.mean(y)	                                               
+	plot_ftime(y,fs)                                                              
+	plot_fft(y,fs,fc1,fc2)
+	save_filtered(y,fs)  
+                           
 def filter_fir(hn,x,fs,fc1,fc2):                                            
 	y=signal.lfilter(hn,1,x)                                                      
 	plot_ftime(y,fs)                                                              
@@ -248,6 +269,9 @@ def view_filters(event,Ngain_label,Ngain_input,window_label,window_cb,bw_label,b
 	Ngain_label.config(textvariable=txt2)
 	txt3=tk.StringVar()
 	ir_label.config(textvariable=txt3)
+	txt4=tk.StringVar()
+	ripple_label.config(textvariable=txt4)
+
 
 	global N_input, att_input
 	if (method_cb.get()=="IIR"):
@@ -260,6 +284,7 @@ def view_filters(event,Ngain_label,Ngain_input,window_label,window_cb,bw_label,b
 		txt1.set("Filter Order")
 		txt2.set("Attenuation [dB]")
 		txt3.set("Select the IIR Method")
+		txt4.set("Ripple %")
 
 		ir_label.grid(row=5)
 		iir_cb.grid(row=6)
@@ -285,6 +310,7 @@ def view_filters(event,Ngain_label,Ngain_input,window_label,window_cb,bw_label,b
 		txt1.set("Transition Band Width [Hz]")
 		txt2.set("Gain [dB]")
 		txt3.set("Select the FIR Method")
+		txt4.set("Ripple %")
 
 		N_input.grid_forget()
 		att_input.grid_forget()
@@ -306,6 +332,9 @@ def view_filters(event,Ngain_label,Ngain_input,window_label,window_cb,bw_label,b
 
 def view_analog(event,Ngain_label,att_input,ripple_label,ripple_input):
 
+	txt1=tk.StringVar()
+	ripple_label.config(textvariable=txt1)
+
 	if (iir_cb.get()=="Bessel" or iir_cb.get()=="Butterworth"):
 		Ngain_label.grid_forget()
 		att_input.grid_forget()
@@ -318,7 +347,9 @@ def view_analog(event,Ngain_label,att_input,ripple_label,ripple_input):
 		ripple_label.grid(row=13)
 		ripple_input.grid(row=14)
 
-	elif (iir_cb.get()=="Chebyshev I"):
+		txt1.set("Ripple Attenuation [dB]")
+
+	elif (iir_cb.get()=="Chebyshev II"):
 		ripple_label.grid_forget()
 		ripple_input.grid_forget()
 		Ngain_label.grid(row=17)
@@ -329,6 +360,8 @@ def view_analog(event,Ngain_label,att_input,ripple_label,ripple_input):
 		ripple_input.grid(row=14)
 		Ngain_label.grid(row=17)
 		att_input.grid(row=18)
+
+		txt1.set("Ripple Attenuation [dB]")
 
 def view_fir(event,window_label,window_cb,ripple_label,ripple_input,bw_label,bw_input,Ngain_label,Ngain_input):
 
@@ -349,6 +382,11 @@ def view_fir(event,window_label,window_cb,ripple_label,ripple_input,bw_label,bw_
 		window_cb.grid_forget()
 		ripple_label.grid_forget()
 		ripple_input.grid_forget()
+
+		bw_label.grid(row=15)
+		bw_input.grid(row=16)
+
+
 		txt.set("Filter Order")
 
 	else:

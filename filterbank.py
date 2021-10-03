@@ -12,7 +12,6 @@ import matplotlib.pyplot as plt
 import filterc as fideal
 import filterfir as ffir
 import filteriir as fiir
-from playsound import playsound
 from scipy.io.wavfile import read, write
 from tkinter import ttk
 from tkinter import messagebox
@@ -31,10 +30,10 @@ def plot_time():
 
 		fig1=Figure(figsize=(4,3),dpi=100)
 		tplot=fig1.add_subplot(111)
-		tplot.plot(t,x,linewidth=2,color="b")
-		tplot.set_xlabel("Time [S]")
-		tplot.set_ylabel("Amplitude [a.u]")
-		#tplot.set_title("Audio Signal")
+		tplot.plot(t,x,linewidth=1,color="g")
+		tplot.set_xlabel("Time [S]",labelpad=1)
+		tplot.set_ylabel("Amplitude [a.u]",labelpad=1)
+		tplot.set_title("Audio Signal")
 		tplot.grid()
 	
 		canvasfig1=FigureCanvasTkAgg(fig1,master=imagesl)
@@ -53,10 +52,10 @@ def plot_ftime(y,fs):
 
 	fig4=Figure(figsize=(4,3),dpi=100)
 	faplot=fig4.add_subplot(111)
-	faplot.plot(t,y,linewidth=2,color="b")
-	faplot.set_xlabel("Time [S]")
-	faplot.set_ylabel("Amplitude [a.u]")
-	#tplot.set_title("Audio Signal")
+	faplot.plot(t,y,linewidth=1,color="g")
+	faplot.set_xlabel("Time [S]",labelpad=1)
+	faplot.set_ylabel("Amplitude [a.u]",labelpad=1)
+	faplot.set_title("Filtered Audio Signal")
 	faplot.grid()
 	
 	canvasfig4=FigureCanvasTkAgg(fig4,master=imageil)
@@ -66,12 +65,22 @@ def plot_ftime(y,fs):
 def plot_filter3(H,Hf):
 
 	fig2=Figure(figsize=(4,3),dpi=100)
-	fplot=fig2.add_subplot(111)
-	fplot.plot(Hf,np.real(H),linewidth=2,color="b")
-	fplot.set_xlabel("f [Hz]")
-	fplot.set_ylabel("Magnitude")
-	#tplot.set_title("Audio Signal")
+	fplot=fig2.add_subplot(211)
+	fplot.plot(Hf,np.real(H),linewidth=1,color="b",label="Magnitude")
+	fplot.set_xlabel("f [Hz]",labelpad=2)
+	fplot.set_ylabel("Magnitude",labelpad=1)
+	#fplot.set_title("Filter Response")
+	fplot.xaxis.set_label_position('top') 
+	ffplot.legend(loc="best")
 	fplot.grid()
+
+	ffplot=fig2.add_subplot(212)
+	ffplot.plot(Hf,np.angles(H),linewidth=1,color="r",label="Phase")
+	ffplot.set_xlabel("f [Hz]",labelpad=1)
+	ffplot.set_ylabel("Degree",labelpad=1)
+	#ffplot.set_title("Audio Signal")
+	ffplot.legend(loc="best")
+	ffplot.grid()
 
 	canvasfig2=FigureCanvasTkAgg(fig2,master=imagesr)
 	canvasfig2.draw()
@@ -81,19 +90,32 @@ def plot_filter2(W,H,fs):
 
 	Mag = 20*np.log10(abs(H))  
 	Freq = W*fs/(2*np.pi)
+	angles=np.unwrap(np.angle(H))
 
 	fig2=Figure(figsize=(4,3),dpi=100)
-	fplot=fig2.add_subplot(111)
-	fplot.plot(Freq,Mag,linewidth=2,color="b")
-	fplot.set_xlabel("f [Hz]")
-	fplot.set_ylabel("Magnitude [dB]")
-	#tplot.set_title("Audio Signal")
+	fplot=fig2.add_subplot(211)
+	fplot.plot(Freq,Mag,linewidth=1,color="b",label="Magnitude")
+	fplot.set_xlabel("f [Hz]",labelpad=2)
+	fplot.set_ylabel("Magnitude [dB]",labelpad=1)
+	#fplot.set_title("Filter Response")
+	fplot.set_xlim(0,fs/2)
+	fplot.xaxis.set_label_position('top') 
+	fplot.legend(loc="best")
 	fplot.grid()
+
+	ffplot=fig2.add_subplot(212)
+	ffplot.plot(W,angles,linewidth=1,color="r",label="Phase")
+	ffplot.set_xlabel("f [Rad]",labelpad=1)
+	ffplot.set_ylabel("Degree",labelpad=1)
+	#ffplot.set_title("Audio Signal")
+	ffplot.legend(loc="best")
+	ffplot.grid()
 
 	canvasfig2=FigureCanvasTkAgg(fig2,master=imagesr)
 	canvasfig2.draw()
 	canvasfig2.get_tk_widget().place(relx=0,rely=0,relwidth=1,relheight=1)
 
+"""
 def plot_filter1(W,H,fs):
 	
 	w=(W-np.pi)*fs/(2*np.pi)
@@ -110,50 +132,31 @@ def plot_filter1(W,H,fs):
 	canvasfig2=FigureCanvasTkAgg(fig2,master=imagesr)
 	canvasfig2.draw()
 	canvasfig2.get_tk_widget().place(relx=0,rely=0,relwidth=1,relheight=1)
+"""
 
-def plot_phase3(H,Hf):
+def plot_fft(y,fs,fc1,fc2):
 
-	fig3=Figure(figsize=(4,3),dpi=100)
-	phaseplot=fig3.add_subplot(111)
-	phaseplot.plot(Hf,np.angle(H),linewidth=2,color="b")
-	phaseplot.set_xlabel("f [Rad]")
-	phaseplot.set_ylabel("Angle [Degree]")
-	#tplot.set_title("Audio Signal")
-	phaseplot.grid()
-
-	canvasfig3=FigureCanvasTkAgg(fig3,master=imageir)
-	canvasfig3.draw()
-	canvasfig3.get_tk_widget().place(relx=0,rely=0,relwidth=1,relheight=1)
-
-def plot_phase2(z,p):
-
-	w,h=signal.freqz(z,p,1024)
-	angles=np.unwrap(np.angle(h))	
+	fc1=int(fc1)
+	if (fc2==""):
+		fc2=0
+	else:
+		fc2=int(fc2)
+	
+	dft=np.fft.fft(y)
+	dft=abs(dft)
+	freq_demod=np.fft.fftfreq(dft.size)*fs
+	dft=dft/float(np.max(np.abs(dft)))
+	dft=dft-np.mean(dft)
+	fclimit=fc1+fc2+2000
 
 	fig3=Figure(figsize=(4,3),dpi=100)
-	phaseplot=fig3.add_subplot(111)
-	phaseplot.plot(w,angles,linewidth=2,color="b")
-	phaseplot.set_xlabel("F [Rad]")
-	phaseplot.set_ylabel("Angle [Degree]")
-	#tplot.set_title("Audio Signal")
-	phaseplot.grid()
-
-	canvasfig3=FigureCanvasTkAgg(fig3,master=imageir)
-	canvasfig3.draw()
-	canvasfig3.get_tk_widget().place(relx=0,rely=0,relwidth=1,relheight=1)
-
-def plot_phase(hn):
-
-	w,h=signal.freqz(hn)
-	angles=np.unwrap(np.angle(h))	
-
-	fig3=Figure(figsize=(4,3),dpi=100)
-	phaseplot=fig3.add_subplot(111)
-	phaseplot.plot(w,angles,linewidth=2,color="b")
-	phaseplot.set_xlabel("f [Rad]")
-	phaseplot.set_ylabel("Angle [Degree]")
-	#tplot.set_title("Audio Signal")
-	phaseplot.grid()
+	fftplot=fig3.add_subplot(111)
+	fftplot.plot(freq_demod,dft,linewidth=1,color="y")
+	fftplot.set_xlabel("f [Hz]",labelpad=1)
+	fftplot.set_ylabel("Magnitude",labelpad=1)
+	fftplot.set_xlim(0,fclimit)
+	fftplot.set_title("Fast Fourier Tranform Output")
+	fftplot.grid()
 
 	canvasfig3=FigureCanvasTkAgg(fig3,master=imageir)
 	canvasfig3.draw()
@@ -174,21 +177,18 @@ def calculate_filter(fc1,fc2,ripple,bw,ngain,window,band,firtype,iirtype,N,att):
 			if (firtype=="Windowing"):
 				hwindow=ffir.fir_windowing(fs,band,window,bw,ripple,fc1,fc2,ngain)
 				w_win,h_win=signal.freqz(hwindow,1,whole=True,worN=1024)
-				plot_filter1(w_win,h_win,fs)
-				plot_phase(hwindow)
-				filter_fir(hwindow,x,fs)
+				plot_filter2(w_win,h_win,fs)
+				filter_fir(hwindow,x,fs,fc1,fc2)
 			elif(firtype=="Freq. Sampling"):
 				hfs=ffir.freq_sampling(fs,band,ngain,fc1,fc2)
 				W,H=signal.freqz(hfs,1,whole=True,worN=1024)
-				plot_filter1(W,H,fs)
-				plot_phase(hfs)
-				filter_fir(hfs,x,fs)
+				plot_filter2(W,H,fs)
+				filter_fir(hfs,x,fs,fc1,fc2)
 			elif(firtype=="Remez"):		
 				hr=ffir.remezf(fs,ngain,bw,band,fc1,fc2)
 				W,H=signal.freqz(hr,1,1024)
-				plot_filter1(W,H,fs)
-				plot_phase(hr)
-				filter_fir(hr,x,fs)
+				plot_filter2(W,H,fs)
+				filter_fir(hr,x,fs,fc1,fc2)
 			else:
 				messagebox.showerror(message="First select the FIR type")
 
@@ -196,14 +196,12 @@ def calculate_filter(fc1,fc2,ripple,bw,ngain,window,band,firtype,iirtype,N,att):
 			z,p=fiir.analog_irr(fs,N,band,iirtype,fc1,fc2,att,ripple)
 			W,H=signal.freqz(z,p,1024)
 			plot_filter2(W,H,fs)
-			plot_phase2(z,p)
-			filter_iir(z,p,x,fs)
+			filter_iir(z,p,x,fs,fc1,fc2)
 
 		elif (method_cb.get()=="Ideal"):
 			xf,H,Hf=fideal.clip(x,fs,band,fc1,fc2)
 			plot_filter3(H,Hf)
-			plot_phase3(H,Hf)
-			filter_ideal(xf,fs)
+			filter_ideal(xf,fs,fc1,fc2)
 		else:
 			messagebox.showerror(message="First select the method")
 
@@ -216,19 +214,22 @@ def save_filtered(y,fs):
 	y16=np.int16(y)                      
 	write("./audios/filtered.wav",fs,y16)    
 
-def filter_fir(hn,x,fs):                                                          
+def filter_fir(hn,x,fs,fc1,fc2):                                            
 	y=signal.lfilter(hn,1,x)                                                      
 	plot_ftime(y,fs)                                                              
+	plot_fft(y,fs,fc1,fc2)
 	save_filtered(y,fs)                                                            
                                                                                    
-def filter_iir(z,p,x,fs):                                                          
-	y=signal.lfilter(z,p,x)                                                        
+def filter_iir(z,p,x,fs,fc1,fc2):
+	y=signal.lfilter(z,p,x)
 	plot_ftime(y,fs)                                                              
-	save_filtered(y,fs)                                                            
+	plot_fft(y,fs,fc1,fc2)
+	save_filtered(y,fs)                                                         
                                                                                    
-def filter_ideal(xf,fs):                  
+def filter_ideal(xf,fs,fc1,fc2):                  
 	rxf=np.real(xf)                      
 	plot_ftime(rxf,fs)                    
+	plot_fft(rxf,fs,fc1,fc2)
 	save_filtered(rxf,fs)
 
 def view_fc(event,fc2_label,fc2_input):
@@ -375,7 +376,6 @@ def help_view():
         about_text=f.read()
         l=tk.Label(filewin,text=about_text,justify="left").pack(padx=8,pady=8,fill='both',expand=True)
 
-
 def help_about():
     filewin = tk.Toplevel()
     filewin.title("About")
@@ -445,11 +445,9 @@ def record_audio():
 def start_filtered():
 	pygame.mixer.music.load("./audios/filtered.wav")
 	pygame.mixer.music.play(loops=0)
-	
 
 def stop_filtered():
 	pygame.mixer.music.stop()
-
 
 def export_data(fc1,fc2,ripple,bw,ngain,window,band,firtype,iirtype,N,att,method):
 
@@ -470,13 +468,6 @@ recording = False
 file_exists = False
 
 pygame.mixer.init()
-
-#pyaudio
-paused=True
-playing=False
-after_id=None
-file=r"./audios/filtered.wav"
-
 
 fmethods=('FIR','IIR','Ideal')
 ftypes=('Bandpass','Bandstop','Highpass','Lowpass')

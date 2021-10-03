@@ -1,5 +1,8 @@
 Filterviz-Filterbank
-Banco de filtros para aplicarlos a señales de audio
-Autores:
+Electronic Engineering Students
+Universidad de Antioquia
+Filter Bank and comparative program for the desing of digital Filters
+
+Authors:
 Santiago Ríos Guiral(gh@SantiagoGuiral/gl@sguiral)
 Emmanuel Gomez Ospina(@ego2509)

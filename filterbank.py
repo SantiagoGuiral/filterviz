@@ -489,14 +489,11 @@ def stop_filtered():
 
 def export_data(fc1,fc2,ripple,bw,ngain,window,band,firtype,iirtype,N,att,method):
 
-	if filtered_exists:
-		dat=f'Method: {method}\nBand: {band}\nFIR filter: {firtype}\nIIR filter: {iirtype}\nFrequency cut 1: {fc1}\nFrequency cut 2: {fc2}\n Window: {window}\nFilter Order: {N}\nRipple: {ripple}\nTransition band width: {bw}\nGain [dB]: {ngain}\nAttenuation: [dB] {att}'
+	dat=f'Method: {method}\nBand: {band}\nFIR filter: {firtype}\nIIR filter: {iirtype}\nFrequency cut 1: {fc1}\nFrequency cut 2: {fc2}\n Window: {window}\nFilter Order: {N}\nRipple: {ripple}\nTransition band width: {bw}\nGain [dB]: {ngain}\nAttenuation: [dB] {att}'
 
-		files = [('All Files', '*.*'),('Dat Files', '*.dat'),('Text Document', '*.txt')]
-		f = asksaveasfile(filetypes = files, defaultextension = files)
-		f.write(dat)
-	else:
-		messagebox.showerror(message="First calculate the filter")
+	files = [('All Files', '*.*'),('Dat Files', '*.dat'),('Text Document', '*.txt')]
+	f = asksaveasfile(filetypes = files, defaultextension = files)
+	f.write(dat)
 
 #GUI Variables
 #Create a queue to contain the audio data
@@ -546,7 +543,7 @@ main.place(relx=0,rely=0,relwidth=1,relheight=1)
 main.configure(bg='white')
 
 #record audio wav
-audioload_frame=tk.LabelFrame(main, text="Audio Input")
+audioload_frame=tk.LabelFrame(main, text="Audio Input",font="bold")
 audioload_frame.place(relx=0.22,rely=0.01,relwidth=0.5,relheight=0.16)
 audioload_frame.configure(bg='white')
 
@@ -563,31 +560,31 @@ record_label=tk.Label(recording_frame,text="Off: Not Recording")
 record_label.place(relx=0.05,rely=0.7)
 record_label.configure(bg='white',fg="red",font='bold')
 
-rec_btn=tk.Button(recording_frame,text="Record Audio",bg="black",fg="white",command=lambda m=1:threading_rec(m,record_label))
+rec_btn=tk.Button(recording_frame,text="Record Audio",bg="#5d5e43",font="bold",fg="white",command=lambda m=1:threading_rec(m,record_label))
 rec_btn.place(relx=0.05,rely=0.2,relwidth=0.4,relheight=0.4)
 
-stop_btn=tk.Button(recording_frame,text="Stop Recording",bg="black",fg="white",command=lambda m=2:threading_rec(m,record_label))
+stop_btn=tk.Button(recording_frame,text="Stop Recording",bg="#5d5e43",font="bold",fg="white",command=lambda m=2:threading_rec(m,record_label))
 stop_btn.place(relx=0.55,rely=0.2,relwidth=0.4,relheight=0.4)
 
-play_btn=tk.Button(listen_frame,text="Play Recording",bg="black",fg="white",command=start_play)
+play_btn=tk.Button(listen_frame,text="Play Recording",bg="#5d5e43",font="bold",fg="white",command=start_play)
 play_btn.place(relx=0.05,rely=0.2,relwidth=0.4,relheight=0.4)
 
-pause_btn=tk.Button(listen_frame,text="Stop Playing",bg="black",fg="white",command=stop_play)
+pause_btn=tk.Button(listen_frame,text="Stop Playing",bg="#5d5e43",font="bold",fg="white",command=stop_play)
 pause_btn.place(relx=0.55,rely=0.2,relwidth=0.4,relheight=0.4)
 
 #Output audio
-filtered_frame=tk.LabelFrame(main, text="Results")
+filtered_frame=tk.LabelFrame(main, text="Results",font="bold")
 filtered_frame.place(relx=0.74,rely=0.01,relwidth=0.25,relheight=0.16)
 filtered_frame.configure(bg="white")
 
-playf_btn=tk.Button(filtered_frame,text="Play Filtered",bg="black",fg="white",command=start_filtered)
+playf_btn=tk.Button(filtered_frame,text="Play Filtered",bg="#5d5e43",font="bold",fg="white",command=start_filtered)
 playf_btn.place(relx=0.05,rely=0.2,relwidth=0.4,relheight=0.4)
 
-pausef_btn=tk.Button(filtered_frame,text="Stop Playing",bg="black",fg="white",command=stop_filtered)
+pausef_btn=tk.Button(filtered_frame,text="Stop Playing",bg="#5d5e43",font="bold",fg="white",command=stop_filtered)
 pausef_btn.place(relx=0.55,rely=0.2,relwidth=0.4,relheight=0.4)
 
 #filter form
-form=tk.LabelFrame(main,text="Input Design Parameters")
+form=tk.LabelFrame(main,text="Input Design Parameters",font="bold")
 form.place(relx=0.01,rely=0.01,relwidth=0.2,relheight=0.71)
 form.configure(bg='white')
 
@@ -596,7 +593,7 @@ N_input=tk.Entry(form)
 att_input=tk.Entry(form)
 
 #Cut frequencies
-fc1_label=tk.Label(form,text="Fc1 [Hz]")
+fc1_label=tk.Label(form,text="Fc1 [Hz]",font="bold")
 #fc1_label.place(relx=0.05,rely=0.16)
 fc1_label.grid(row=7)
 fc1_label.configure(bg='white')
@@ -605,7 +602,7 @@ fc1_input=tk.Entry(form)
 #fc1_input.place(relx=0.05,rely=0.19,relwidth=0.4)
 fc1_input.grid(row=8)
 
-fc2_label=tk.Label(form,text="Fc2 [Hz]")
+fc2_label=tk.Label(form,text="Fc2 [Hz]",font="bold")
 #fc2_label.place(relx=0.05,rely=0.23)
 fc2_label.grid(row=9)
 fc2_label.configure(bg='white')
@@ -615,7 +612,7 @@ fc2_input=tk.Entry(form)
 fc2_input.grid(row=10)
 
 #Window type
-window_label=tk.Label(form,text="Select the Window Type")
+window_label=tk.Label(form,text="Select the Window Type",font="bold")
 #window_label.place(relx=0.05,rely=0.51)
 window_label.grid(row=11)
 window_label.configure(bg='white')
@@ -629,7 +626,7 @@ window_cb.grid(row=12)
 #window_cb.current(0)
 
 #Ripple 
-ripple_label=tk.Label(form,text="Ripple %")
+ripple_label=tk.Label(form,text="Ripple %",font="bold")
 #ripple_label.place(relx=0.05,rely=0.3)
 ripple_label.grid(row=13)
 ripple_label.configure(bg='white')
@@ -639,7 +636,7 @@ ripple_input=tk.Entry(form)
 ripple_input.grid(row=14)
 
 #Width of the transition band
-bw_label=tk.Label(form,text="Transition Band Width [Hz]")
+bw_label=tk.Label(form,text="Transition Band Width [Hz]",font="bold")
 #bw_label.place(relx=0.05,rely=0.44)
 bw_label.grid(row=15)
 bw_label.configure(bg='white')
@@ -649,7 +646,7 @@ bw_input=tk.Entry(form)
 bw_input.grid(row=16)
 
 #Gain or Filter order
-Ngain_label=tk.Label(form,text="Gain [dB]")
+Ngain_label=tk.Label(form,text="Gain [dB]",font="bold")
 #gain_label.place(relx=0.05,rely=0.37)
 Ngain_label.grid(row=17)
 Ngain_label.configure(bg='white')
@@ -659,7 +656,7 @@ Ngain_input=tk.Entry(form)
 Ngain_input.grid(row=18)
 
 #Filter method combobox
-method_label=tk.Label(form,text="Select the Method")
+method_label=tk.Label(form,text="Select the Method",font="bold")
 #method_label.place(relx=0.05,rely=0.02)
 method_label.grid(row=1,pady=(15,0))
 method_label.configure(bg='white')
@@ -674,7 +671,7 @@ method_cb.grid(row=2)
 method_cb.bind("<<ComboboxSelected>>",lambda event: view_filters(event,Ngain_label,Ngain_input,window_label,window_cb,bw_label,bw_input,ripple_label,ripple_input))
 
 #Filter type combobox
-type_label=tk.Label(form,text="Select the Filter Band")
+type_label=tk.Label(form,text="Select the Filter Band",font="bold")
 #type_label.place(relx=0.05,rely=0.09)
 type_label.grid(row=3)
 type_label.configure(bg='white')
@@ -689,7 +686,7 @@ type_cb.grid(row=4)
 type_cb.bind("<<ComboboxSelected>>",lambda event: view_fc(event,fc2_label,fc2_input))
 
 #FIR or IIR method
-ir_label=tk.Label(form,text="Select the FIR Method")
+ir_label=tk.Label(form,text="Select the FIR Method",font="bold")
 #ir_label.place(relx=0.05,rely=0.02)
 ir_label.grid(row=5)
 ir_label.configure(bg='white')
@@ -715,7 +712,7 @@ iir_cb.bind("<<ComboboxSelected>>",lambda event: view_analog(event,Ngain_label,a
 form.grid_columnconfigure(0,weight=1)
 
 #graphics of interest
-image_frame=tk.LabelFrame(main,text="Graphics of Interest")
+image_frame=tk.LabelFrame(main,text="Graphics of Interest",font="bold")
 image_frame.place(relx=0.22,rely=0.18,relwidth=0.77,relheight=0.81)
 image_frame.configure(bg='white')
 
@@ -736,14 +733,14 @@ imageir.place(relx=0.505,rely=0.505,relwidth=0.49,relheight=0.49)
 imageir.configure(bg='white')
 
 #Frame calculate and save filter
-results_frame=tk.LabelFrame(main,text="Calculate Filter")
+results_frame=tk.LabelFrame(main,text="Calculate Filter",font="bold")
 results_frame.place(relx=0.01,rely=0.72,relwidth=0.20,relheight=0.27)
 results_frame.configure(bg='white')
 
-btn_calculate=tk.Button(results_frame,text="Calculate",fg="white",bg="black",command=lambda:calculate_filter(fc1_input.get(),fc2_input.get(),ripple_input.get(),bw_input.get(),Ngain_input.get(),window_cb.get(),type_cb.get(),fir_cb.get(),iir_cb.get(),N_input.get(),att_input.get()))
+btn_calculate=tk.Button(results_frame,text="Calculate",fg="white",bg="#5d5e43",font="bold",command=lambda:calculate_filter(fc1_input.get(),fc2_input.get(),ripple_input.get(),bw_input.get(),Ngain_input.get(),window_cb.get(),type_cb.get(),fir_cb.get(),iir_cb.get(),N_input.get(),att_input.get()))
 btn_calculate.place(relx=0.2,rely=0.2,relwidth=0.6,relheight=0.2)
 
-btn_save=tk.Button(results_frame,text="Export",fg="white",bg="black",command=lambda:export_data(fc1_input.get(),fc2_input.get(),ripple_input.get(),bw_input.get(),Ngain_input.get(),window_cb.get(),type_cb.get(),fir_cb.get(),iir_cb.get(),N_input.get(),att_input.get(),method_cb.get()))
+btn_save=tk.Button(results_frame,text="Export",fg="white",bg="#5d5e43",font="bold",command=lambda:export_data(fc1_input.get(),fc2_input.get(),ripple_input.get(),bw_input.get(),Ngain_input.get(),window_cb.get(),type_cb.get(),fir_cb.get(),iir_cb.get(),N_input.get(),att_input.get(),method_cb.get()))
 btn_save.place(relx=0.2,rely=0.6,relwidth=0.6,relheight=0.21)
 
 window.mainloop()

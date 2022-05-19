@@ -1,6 +1,6 @@
 # filterviz
 
-Filterviz is a Python applications builded with Tkinter that allows the user to import an audio file and presents a variety of digital filters with the objective to apply them and analyze their their effect in the audio
+Filterviz is a Python application built with Tkinter that allows the user to import an audio file and presents a variety of digital filters with the objective to apply them and analyze their effects in the audio.
 
 The program was developed as the final project for the digital signal processing course from the university of Antioquia.
 
